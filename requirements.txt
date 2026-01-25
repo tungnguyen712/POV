@@ -1,0 +1,9 @@
+# backend dependencies
+fastapi
+uvicorn[standard]
+python-dotenv
+google-generativeai
+httpx
+supabase
+Pillow
+python-multipart
