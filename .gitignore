@@ -1,2 +1,17 @@
 .env
+env/
+.env.*
+*.env
+
+venv/
 .venv/
+
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+.dart_tool/
+build/
+.flutter-plugins
+.flutter-plugins-dependencies

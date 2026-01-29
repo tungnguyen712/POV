@@ -35,6 +35,8 @@ dependencies:
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.8
+  http: ^1.2.0
+  image_picker: ^1.0.7
 
 dev_dependencies:
   flutter_test:
@@ -88,3 +90,12 @@ flutter:
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/to/font-from-package
+  fonts:
+    - family: Arimo
+      fonts:
+        - asset: fonts/Arimo-Regular.ttf
+        - asset: fonts/Arimo-Bold.ttf
+          weight: 700
+    - family: TiltWarp
+      fonts:
+        - asset: fonts/TiltWarp-Regular.ttf
