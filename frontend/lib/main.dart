@@ -23,10 +23,10 @@ class LandmarkApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.teal),
         useMaterial3: true,
       ),
-      home: const ScanScreen(),
       home: const LoginScreen(),
       routes: {
         '/onboarding': (context) => const OnboardingScreen(),
+        '/scan': (context) => const ScanScreen(),
       },
     );
   }

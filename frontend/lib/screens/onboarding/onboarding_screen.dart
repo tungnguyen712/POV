@@ -137,7 +137,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                         onPressed: (_selectedAge == null)
                             ? null
                             : () {
-                                // TODO: Navigate to next screen.
+                                Navigator.pushReplacementNamed(context, '/scan');
                               },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: _selectedAge == null
