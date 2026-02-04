@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:flutter_tts/flutter_tts.dart';
 import '../../constants/colors.dart';
 
 class LandmarkResultScreen extends StatefulWidget {
@@ -17,13 +18,44 @@ class LandmarkResultScreen extends StatefulWidget {
 }
 
 class _LandmarkResultScreenState extends State<LandmarkResultScreen> {
+  final FlutterTts _tts = FlutterTts();
   bool _isSpeaking = false;
+  bool _ttsReady = false;
 
-  void _toggleSpeech() {
-    setState(() {
-      _isSpeaking = !_isSpeaking;
+  Future<void> _initTts() async {
+    if (_ttsReady) return;
+    await _tts.setLanguage('en-US');
+    await _tts.setSpeechRate(0.45);
+    await _tts.setPitch(1.0);
+
+    _tts.setCompletionHandler(() {
+      if (!mounted) return;
+      setState(() => _isSpeaking = false);
     });
-    // TODO: Implement text-to-speech functionality
+    _tts.setCancelHandler(() {
+      if (!mounted) return;
+      setState(() => _isSpeaking = false);
+    });
+    _tts.setErrorHandler((_) {
+      if (!mounted) return;
+      setState(() => _isSpeaking = false);
+    });
+
+    _ttsReady = true;
+  }
+
+  Future<void> _toggleSpeech(String text) async {
+    if (text.trim().isEmpty) return;
+    await _initTts();
+    if (_isSpeaking) {
+      await _tts.stop();
+      if (!mounted) return;
+      setState(() => _isSpeaking = false);
+      return;
+    }
+
+    setState(() => _isSpeaking = true);
+    await _tts.speak(text);
   }
 
   @override
@@ -32,6 +64,11 @@ class _LandmarkResultScreenState extends State<LandmarkResultScreen> {
     final location = widget.landmarkData['location'] ?? '';
     final tags = List<String>.from(widget.landmarkData['tags'] ?? []);
     final description = widget.landmarkData['description'] ?? '';
+    final ttsText = [
+      landmarkName,
+      location,
+      description,
+    ].where((p) => p.toString().trim().isNotEmpty).join('. ');
     
     // Extract fun_facts
     final funFacts = widget.landmarkData['fun_facts'] ?? {};
@@ -142,7 +179,7 @@ class _LandmarkResultScreenState extends State<LandmarkResultScreen> {
                               size: 28,
                               color: Colors.black54,
                             ),
-                            onPressed: _toggleSpeech,
+                            onPressed: () => _toggleSpeech(ttsText),
                           ),
                         ],
                       ),
@@ -398,5 +435,11 @@ class _LandmarkResultScreenState extends State<LandmarkResultScreen> {
         ),
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    _tts.stop();
+    super.dispose();
   }
 }
