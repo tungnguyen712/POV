@@ -1,0 +1,62 @@
+[33mcommit 61e378dc7bca8bab206b8999479ea2f438ab0eab[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mKhanh[m[33m, [m[1;31morigin/Khanh[m[33m)[m
+Author: Truong Nguyen Tien Khanh <88968349+heyamktr@users.noreply.github.com>
+Date:   Fri Feb 6 02:21:32 2026 -0500
+
+    Update main.py
+
+[33mcommit 51f865b329e2c6b15c88671bfffec06dd704393b[m
+Author: Truong Nguyen Tien Khanh <88968349+heyamktr@users.noreply.github.com>
+Date:   Fri Feb 6 02:16:24 2026 -0500
+
+    Update wrapped screen and API integration
+
+[33mcommit ccd28e7a1ba23311c1c100f56f7306c0ed557169[m
+Author: tungnguyen712 <nguyenductung712@gmail.com>
+Date:   Tue Feb 3 16:33:45 2026 -0800
+
+    test camera on phone
+
+[33mcommit a6f011f5be20aa517185d1e8b330b3fbdd6897c1[m
+Author: Truong Nguyen <ntruong_2028@depauw.edu>
+Date:   Sat Jan 31 15:02:28 2026 -0500
+
+    Khanh
+
+[33mcommit 708653a8ab58701a4cc1a149004a2f31b6cc66d1[m
+Author: Truong Nguyen <ntruong_2028@depauw.edu>
+Date:   Sat Jan 31 14:06:10 2026 -0500
+
+    Khanh
+
+[33mcommit 5f075c011aec239884a0fed29fb7e899a5c98972[m
+Author: tungnguyen712 <nguyenductung712@gmail.com>
+Date:   Thu Jan 29 13:16:33 2026 -0800
+
+    identify landmark feature
+
+[33mcommit 3a43332ec4dc5103e44ae4d94309e29a14973d7c[m
+Merge: 9fe1eb0 3a98770
+Author: Truong Nguyen Tien Khanh <88968349+heyamktr@users.noreply.github.com>
+Date:   Mon Jan 26 21:28:38 2026 -0500
+
+    Merge pull request #1 from phamthucquyen/front-end
+    
+    Setup Flutter frontend structure
+
+[33mcommit 3a98770f2e0c599ab316c2bdd131121a91daa304[m
+Author: Truong Nguyen <ntruong_2028@depauw.edu>
+Date:   Mon Jan 26 02:13:24 2026 -0500
+
+    Setup Flutter frontend structure
+
+[33mcommit 9fe1eb03c00fa5c41e8e95fcf7441fefbd95dc76[m
+Author: tungnguyen712 <nguyenductung712@gmail.com>
+Date:   Sun Jan 25 13:48:36 2026 -0800
+
+    setup backend structure
+
+[33mcommit 388e3abd3be782feaa39992ef8186c6f9fab6f27[m
+Author: phamthucquyen <131554886+phamthucquyen@users.noreply.github.com>
+Date:   Sun Jan 25 14:38:41 2026 -0500
+
+    Initial commit
