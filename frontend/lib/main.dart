@@ -4,6 +4,7 @@ import 'package:image_picker/image_picker.dart';
 import 'screens/camera/scan_screen.dart';
 import 'screens/landmark/result_screen.dart';
 import 'services/landmark_service.dart';
+import 'screens/home/home_screen.dart';
 
 void main() {
   runApp(const MyApp());
@@ -20,7 +21,7 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.teal),
         useMaterial3: true,
       ),
-      home: const ScanScreen(),
+      home: const HomeScreen(),
     );
   }
 }
@@ -41,7 +42,7 @@ class _TestLandmarkScreenState extends State<TestLandmarkScreen> {
     try {
       // Pick image
       final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
-      
+
       if (image == null) return;
 
       setState(() => _loading = true);
@@ -91,7 +92,8 @@ class _TestLandmarkScreenState extends State<TestLandmarkScreen> {
                 icon: const Icon(Icons.photo_library),
                 label: const Text('Pick Image & Identify'),
                 style: ElevatedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
                   textStyle: const TextStyle(fontSize: 18),
                 ),
               ),
