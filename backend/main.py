@@ -2,7 +2,7 @@ import os
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from dotenv import load_dotenv
-from routes import identify
+from routes import identify, wrapped
 import uvicorn
 
 # Load environment variables
@@ -21,6 +21,7 @@ app.add_middleware(
 
 # Include routers
 app.include_router(identify.router)
+app.include_router(wrapped.router)
 
 @app.get("/")
 async def root():
