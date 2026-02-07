@@ -176,7 +176,7 @@ class _LandmarkResultScreenState extends State<LandmarkResultScreen> {
                   ),
                 ),
               if (distance.isNotEmpty && rating.isNotEmpty)
-                const Text(' â€¢ ', style: TextStyle(color: Colors.black45)),
+                const Text(' - ', style: TextStyle(color: Colors.black45)),
               if (rating.isNotEmpty)
                 Row(
                   children: [
@@ -281,7 +281,7 @@ class _LandmarkResultScreenState extends State<LandmarkResultScreen> {
                   ),
                 ),
               if (start.isNotEmpty && distance.isNotEmpty)
-                const Text(' â€¢ ', style: TextStyle(color: Colors.black45)),
+                const Text(' - ', style: TextStyle(color: Colors.black45)),
               if (distance.isNotEmpty)
                 Text(
                   distance,
