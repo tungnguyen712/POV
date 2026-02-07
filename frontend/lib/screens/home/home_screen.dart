@@ -23,8 +23,8 @@ class _HomeScreenState extends State<HomeScreen> {
     _PlaceholderPage(title: 'Home (Wrapped/History)'),
     _PlaceholderPage(title: 'Calendar (Events)'),
     ScanScreen(),
-    _PlaceholderPage(title: 'Search (Nearby)'),
-    _PlaceholderPage(title: 'Profile (Chatbot)'),
+    _PlaceholderPage(title: 'Search (Chatbot)'),
+    _PlaceholderPage(title: 'Profile'),
   ];
 
   @override
@@ -37,7 +37,6 @@ class _HomeScreenState extends State<HomeScreen> {
           setState(() => _currentIndex = index);
         },
         destinations: const [
-          NavigationDestination(icon: Icon(Icons.home), label: 'Home'),
           NavigationDestination(
             icon: Icon(Icons.home),
             label: 'Home',
