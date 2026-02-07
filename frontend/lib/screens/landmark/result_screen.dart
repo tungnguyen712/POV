@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import '../../constants/colors.dart';
+import '../chatbot/chatbot_screen.dart';
 
 class LandmarkResultScreen extends StatefulWidget {
   final File imageFile;
@@ -323,8 +324,16 @@ class _LandmarkResultScreenState extends State<LandmarkResultScreen> {
                         padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 6.0),
                         child: InkWell(
                           onTap: () {
-                            // TODO: Open chat with this question
-                            print('Question tapped: $question');
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => ChatbotScreen(
+                                  landmarkName: landmarkName,
+                                  landmarkDescription: description,
+                                  initialQuestion: question,
+                                ),
+                              ),
+                            );
                           },
                           child: Row(
                             crossAxisAlignment: CrossAxisAlignment.start,
