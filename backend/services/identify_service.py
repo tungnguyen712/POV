@@ -147,17 +147,20 @@ async def identify_landmark(
     # cache result for 1hr
     cache_set(cache_key, res, ttl_seconds=60 * 60)
 
-    # save scan to DB
-    if user_id and res.landmark_lat is not None and res.landmark_lng is not None:
-        # Save landmark coordinates for pin placement.
-        queries.save_scan(
-            user_id=user_id,
-            landmark_name=res.landmark_name,
-            description=res.description,
-            lat=res.landmark_lat,
-            lng=res.landmark_lng,
-            tags=res.tags,
-            timestamp=timestamp,
-        )
+    # save scan to DB (prefer model coords, fall back to request coords)
+    if user_id:
+        save_lat = res.landmark_lat if res.landmark_lat is not None else lat
+        save_lng = res.landmark_lng if res.landmark_lng is not None else lng
+        if save_lat is not None and save_lng is not None:
+            # Save landmark coordinates for pin placement.
+            queries.save_scan(
+                user_id=user_id,
+                landmark_name=res.landmark_name,
+                description=res.description,
+                lat=save_lat,
+                lng=save_lng,
+                tags=res.tags,
+                timestamp=timestamp,
+            )
 
     return res
