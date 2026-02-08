@@ -76,6 +76,21 @@ class _SignupScreenState extends State<SignupScreen> {
 
       if (!mounted) return;
 
+      // Create profile entry in profiles table
+      if (res.user != null) {
+        try {
+          await _sb.from('profiles').insert({
+            'id': res.user!.id,
+            'username': username,
+            'email': email,
+            'onboarding_done': false,
+          });
+        } catch (profileError) {
+          print('Error creating profile: $profileError');
+          // Continue anyway - profile can be created later
+        }
+      }
+
       // If email confirmation is ON, session will often be null
       if (res.session == null) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -83,7 +98,7 @@ class _SignupScreenState extends State<SignupScreen> {
             content: Text('Check your email to confirm your account.'),
           ),
         );
-        Navigator.pop(context); // back to login
+        Navigator.pushReplacementNamed(context, '/onboarding');
       } else {
         // Email confirm OFF -> signed in immediately
         Navigator.pushReplacementNamed(context, '/onboarding');

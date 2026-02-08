@@ -6,6 +6,7 @@ from routes import identify, wrapped
 import uvicorn
 from routes.auth import router as auth_router
 from routes.chat import router as chat_router
+from routes.profile import router as profile_router
 
 load_dotenv()
 
@@ -24,6 +25,7 @@ app.include_router(auth_router)
 app.include_router(chat_router)
 app.include_router(identify.router)
 app.include_router(wrapped.router)
+app.include_router(profile_router)
 
 @app.get("/")
 async def root():

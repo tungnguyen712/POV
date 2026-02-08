@@ -86,7 +86,7 @@ async def identify_landmark(
     image_bytes: bytes,
     user_id: Optional[str],
     age_bracket: Optional[AgeBracket],
-    interests: list[str],
+    interests: Optional[list[str]],
     lat: Optional[float],
     lng: Optional[float],
     mime_type: str = "image/jpeg",
@@ -95,7 +95,7 @@ async def identify_landmark(
 
     # resolve final profile - user input takes priority, profile is fallback
     final_age: AgeBracket = age_bracket or "adult"
-    final_interests = normalize_interests(interests)
+    final_interests = normalize_interests(interests or [])
 
     if user_id:
         profile = queries.get_profile(user_id)

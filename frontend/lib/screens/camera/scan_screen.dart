@@ -1,8 +1,10 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../services/landmark_service.dart';
+import '../../services/user_service.dart';
 import '../landmark/result_screen.dart';
 
 class ScanScreen extends StatefulWidget {
@@ -15,11 +17,9 @@ class ScanScreen extends StatefulWidget {
 class _ScanScreenState extends State<ScanScreen> {
   final ImagePicker _picker = ImagePicker();
   final LandmarkService _service = LandmarkService();
+  final UserService _userService = UserService();
 
   bool _loading = false;
-
-  // TODO: replace later with real auth user id
-  final String _userId = 'test-user-123';
 
   Future<void> _scan(ImageSource source) async {
     try {
@@ -32,10 +32,16 @@ class _ScanScreenState extends State<ScanScreen> {
       setState(() => _loading = true);
 
       final file = File(image.path);
+      
+      // Get authenticated user ID and preferences
+      final userId = _userService.getUserId();
+      final prefs = await _userService.getUserPreferences();
 
       final result = await _service.identifyLandmark(
         imageFile: file,
-        userId: _userId,
+        userId: userId,
+        ageBracket: prefs['age_group'],
+        interests: prefs['interests'],
       );
 
       if (!mounted) return;
