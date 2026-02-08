@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../camera/scan_screen.dart';
+import '../location/location_screen.dart';
 import '../profile/profile_dashboard.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -14,7 +15,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   final List<Widget> _pages = const [
     _PlaceholderPage(title: 'Calendar (Events)'),
-    _PlaceholderPage(title: 'Location (Nearby)'),
+    LocationScreen(),
     ScanScreen(),
     _PlaceholderPage(title: 'Search'),
     ProfileDashboard(),
