@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:geolocator/geolocator.dart';
 
 import '../../services/landmark_service.dart';
 import '../../services/user_service.dart';
@@ -93,11 +94,18 @@ class _ScanScreenState extends State<ScanScreen> {
       final position = await _getPosition();
 
       // Call backend/service
+      // Location (optional)
+      final position = await _getPosition();
+
+      // Call backend/service
       final result = await _service.identifyLandmark(
         imageFile: file,
         userId: userId,
         ageBracket: prefs['age_group'],
         interests: prefs['interests'],
+        // If your LandmarkService supports lat/lng, keep these:
+        lat: position?.latitude,
+        lng: position?.longitude,
         // If your LandmarkService supports lat/lng, keep these:
         lat: position?.latitude,
         lng: position?.longitude,
@@ -182,4 +190,21 @@ class _ScanScreenState extends State<ScanScreen> {
       ),
     );
   }
+}
+Future<Position?> _getPosition() async {
+  final serviceEnabled = await Geolocator.isLocationServiceEnabled();
+  if (!serviceEnabled) return null;
+
+  var permission = await Geolocator.checkPermission();
+  if (permission == LocationPermission.denied) {
+    permission = await Geolocator.requestPermission();
+  }
+  if (permission == LocationPermission.denied ||
+      permission == LocationPermission.deniedForever) {
+    return null;
+  }
+
+  return Geolocator.getCurrentPosition(
+    desiredAccuracy: LocationAccuracy.medium,
+  );
 }

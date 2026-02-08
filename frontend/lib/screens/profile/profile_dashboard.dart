@@ -32,15 +32,6 @@ class _ProfileDashboardState extends State<ProfileDashboard> {
     color: _titleColor,
     height: 1.2,
   );
-
-  static const TextStyle _emailComfortaa = TextStyle(
-    fontFamily: 'Comfortaa',
-    fontSize: 18,
-    fontWeight: FontWeight.w700,
-    color: _titleColor,
-    height: 1.25,
-  );
-
   static const TextStyle _smallComfortaa = TextStyle(
     fontFamily: 'Comfortaa',
     fontSize: 13,
@@ -169,7 +160,7 @@ class _ProfileDashboardState extends State<ProfileDashboard> {
             ],
           ),
 
-          const SizedBox(height: 24),
+              const SizedBox(height: 24),
 
           // Recent Activity
           Row(

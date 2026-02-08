@@ -26,24 +26,33 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
   List<String> _suggestedQuestions = [];
   bool _isLoading = false;
 
-  // ===== Match Login typography/colors =====
+  // ===== Match Login/Profile vibe =====
   static const Color _titleColor = Color(0xFF363E44);
   static const Color _muted = Color(0xFF9CA3AF);
+
+  // Same as Login _buttonBg (orange)
+  static const Color _accentOrange = Color(0xFFF05B55);
+
+  // Same vibe as Login _fieldBg (mint background)
+  static const Color _bgMint = Color(0xFFEDFFFC);
+
+  // Keep chat bubble teal
+  static const Color _teal = Color(0xFF1F8A70);
 
   static const TextStyle _appBarTitleTilt = TextStyle(
     fontFamily: 'Tilt Warp',
     fontSize: 18,
     fontWeight: FontWeight.w700,
-    color: Colors.black,
     height: 1.2,
+    color: Colors.white,
   );
 
   static const TextStyle _appBarSubtitleComfortaa = TextStyle(
     fontFamily: 'Comfortaa',
     fontSize: 13,
     fontWeight: FontWeight.w600,
-    color: Colors.black54,
     height: 1.2,
+    color: Colors.white70,
   );
 
   static const TextStyle _emptyStateComfortaa = TextStyle(
@@ -118,21 +127,20 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
     try {
       final chatResponse = await _chatService.sendMessage(
         landmarkName: widget.landmarkName ?? 'General',
-        landmarkInfo: widget.landmarkDescription ?? 'General landmark and travel assistant',
+        landmarkInfo:
+            widget.landmarkDescription ?? 'General landmark and travel assistant',
         conversationHistory: _messages,
         userMessage: userMessage,
       );
 
       setState(() {
-        _messages.add(
-          ChatMessage(role: 'assistant', content: chatResponse.response),
-        );
+        _messages.add(ChatMessage(role: 'assistant', content: chatResponse.response));
         _suggestedQuestions = chatResponse.suggestedQuestions;
         _isLoading = false;
       });
 
       _scrollToBottom();
-    } catch (e) {
+    } catch (_) {
       setState(() {
         _messages.add(
           ChatMessage(
@@ -162,36 +170,26 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: _bgMint,
       appBar: AppBar(
-        backgroundColor: AppColors.topBarBackground,
+        backgroundColor: _accentOrange, // top bar orange
         elevation: 0,
         automaticallyImplyLeading: widget.landmarkName != null,
         leading: widget.landmarkName != null
             ? IconButton(
-                icon: const Icon(Icons.arrow_back, color: Colors.black),
+                icon: const Icon(Icons.arrow_back, color: Colors.white),
                 onPressed: () => Navigator.pop(context),
               )
             : null,
         title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
-              'Chat',
-              style: TextStyle(
-                fontFamily: 'TiltWrap',
-                fontSize: 18,
-                fontWeight: FontWeight.w600,
-                color: Colors.black,
-              ),
-            ),
+            const Text('Chat', style: _appBarTitleTilt),
             if (widget.landmarkName != null)
               Text(
                 widget.landmarkName!,
-                style: const TextStyle(
-                  fontFamily: 'Arimo',
-                  fontSize: 13,
-                  color: Colors.black54,
+                style: _appBarSubtitleComfortaa.copyWith(
+                  color: Colors.white.withOpacity(0.85),
                 ),
               ),
           ],
@@ -232,9 +230,8 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
                       final isUser = message.role == 'user';
 
                       return Align(
-                        alignment: isUser
-                            ? Alignment.centerRight
-                            : Alignment.centerLeft,
+                        alignment:
+                            isUser ? Alignment.centerRight : Alignment.centerLeft,
                         child: Container(
                           margin: const EdgeInsets.only(bottom: 12),
                           padding: const EdgeInsets.symmetric(
@@ -242,13 +239,10 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
                             vertical: 12,
                           ),
                           constraints: BoxConstraints(
-                            maxWidth:
-                                MediaQuery.of(context).size.width * 0.75,
+                            maxWidth: MediaQuery.of(context).size.width * 0.75,
                           ),
                           decoration: BoxDecoration(
-                            color: isUser
-                                ? const Color(0xFF1F8A70)
-                                : Colors.grey.shade200,
+                            color: isUser ? _teal : Colors.grey.shade200,
                             borderRadius: BorderRadius.circular(16),
                           ),
                           child: Text(
@@ -280,9 +274,7 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
                       height: 20,
                       child: CircularProgressIndicator(
                         strokeWidth: 2,
-                        valueColor: AlwaysStoppedAnimation<Color>(
-                          Color(0xFF1F8A70),
-                        ),
+                        valueColor: AlwaysStoppedAnimation<Color>(_teal),
                       ),
                     ),
                   ),
@@ -300,7 +292,7 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
                   Text(
                     'Suggested questions:',
                     style: _suggestLabelComfortaa.copyWith(
-                      color: Colors.grey.shade600,
+                      color: _accentOrange.withOpacity(0.9),
                     ),
                   ),
                   const SizedBox(height: 8),
@@ -317,18 +309,17 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
                             vertical: 8,
                           ),
                           decoration: BoxDecoration(
-                            color: const Color(0xFF1F8A70).withOpacity(0.1),
+                            color: _accentOrange.withOpacity(0.10),
                             borderRadius: BorderRadius.circular(20),
                             border: Border.all(
-                              color:
-                                  const Color(0xFF1F8A70).withOpacity(0.3),
+                              color: _accentOrange.withOpacity(0.35),
                               width: 1,
                             ),
                           ),
                           child: Text(
                             question,
                             style: _suggestChipComfortaa.copyWith(
-                              color: const Color(0xFF1F8A70),
+                              color: _accentOrange,
                             ),
                           ),
                         ),
@@ -339,10 +330,11 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
               ),
             ),
 
+          // Input Bar (mint background + orange send)
           Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: _bgMint,
               boxShadow: [
                 BoxShadow(
                   color: Colors.black.withOpacity(0.05),
@@ -360,7 +352,7 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
                       hintText: 'Ask a question...',
                       hintStyle: _hintTextComfortaa,
                       filled: true,
-                      fillColor: Colors.grey.shade100,
+                      fillColor: Colors.white,
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(24),
                         borderSide: BorderSide.none,
@@ -379,13 +371,12 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
                 const SizedBox(width: 12),
                 Container(
                   decoration: const BoxDecoration(
-                    color: Color(0xFF1F8A70),
+                    color: _accentOrange,
                     shape: BoxShape.circle,
                   ),
                   child: IconButton(
                     icon: const Icon(Icons.send, color: Colors.white),
-                    onPressed: () =>
-                        _sendMessage(_messageController.text),
+                    onPressed: () => _sendMessage(_messageController.text),
                   ),
                 ),
               ],
