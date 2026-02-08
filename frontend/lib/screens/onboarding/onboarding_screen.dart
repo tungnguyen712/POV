@@ -57,9 +57,6 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     });
 
     try {
-      // interest column is text => store as comma-separated string
-      final interestText = _interests.isEmpty ? null : _interests.join(', ');
-
       await _sb.from('profiles').upsert({
         'id': user.id,
         'email': user.email,
@@ -78,11 +75,55 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     }
   }
 
+  // ===== Match LoginScreen typography/colors =====
+  static const Color _titleColor = Color(0xFF363E44);
+  static const Color _muted = Color(0xFF9CA3AF);
+
+  static const TextStyle _titleTilt = TextStyle(
+    color: _titleColor,
+    fontFamily: 'Tilt Warp',
+    fontSize: 30,
+    fontWeight: FontWeight.w700,
+    height: 1.22,
+  );
+
+  static const TextStyle _subtitleComfortaa = TextStyle(
+    color: _titleColor,
+    fontFamily: 'Comfortaa',
+    fontSize: 16,
+    fontWeight: FontWeight.w500,
+    height: 1.33,
+  );
+
+  static const TextStyle _helperComfortaa = TextStyle(
+    color: _muted,
+    fontFamily: 'Comfortaa',
+    fontSize: 14,
+    fontWeight: FontWeight.w600,
+    height: 1.33,
+  );
+
+  static const TextStyle _labelComfortaa = TextStyle(
+    color: _titleColor,
+    fontFamily: 'Comfortaa',
+    fontSize: 14,
+    fontWeight: FontWeight.w700,
+    height: 1.33,
+  );
+
+  static const TextStyle _buttonComfortaa = TextStyle(
+    fontFamily: 'Comfortaa',
+    fontSize: 16,
+    fontWeight: FontWeight.w600,
+    height: 1.33,
+  );
+
   @override
   Widget build(BuildContext context) {
     final canContinue = _selectedAge != null && !_saving;
 
     return Scaffold(
+      backgroundColor: Colors.white,
       body: SafeArea(
         child: LayoutBuilder(
           builder: (context, constraints) {
@@ -95,60 +136,50 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   children: [
                     const Text(
                       'Welcome to\nLandmark Identify',
-                      style: TextStyle(
-                        fontSize: 26,
-                        fontWeight: FontWeight.w700,
-                        height: 1.2,
-                        color: Color(0xFF2E2E2E),
-                      ),
+                      style: _titleTilt,
                     ),
                     const SizedBox(height: 8),
                     const Text(
                       "Let's personalize your experience",
-                      style: TextStyle(
-                        fontSize: 14.5,
-                        color: Color(0xFF6A6A6A),
-                      ),
+                      style: _helperComfortaa,
                     ),
                     const SizedBox(height: 22),
-                    const Text(
-                      'Age Group *',
-                      style: TextStyle(
-                        fontSize: 14.5,
-                        fontWeight: FontWeight.w600,
-                        color: Color(0xFF3B3B3B),
-                      ),
-                    ),
+
+                    const Text('Age Group *', style: _labelComfortaa),
                     const SizedBox(height: 12),
                     for (final age in _ageGroups) ...[
                       _AgeOptionCard(
                         label: age,
                         selected: _selectedAge == age,
-                        onTap: () {
-                          setState(() {
-                            _selectedAge = age;
-                          });
-                        },
+                        onTap: () => setState(() => _selectedAge = age),
                       ),
                       const SizedBox(height: 10),
                     ],
+
                     const SizedBox(height: 8),
-                    const Text(
-                      'Interests (select multiple)',
-                      style: TextStyle(
-                        fontSize: 14.5,
-                        fontWeight: FontWeight.w600,
-                        color: Color(0xFF3B3B3B),
-                      ),
-                    ),
+                    const Text('Interests (select multiple)',
+                        style: _labelComfortaa),
                     const SizedBox(height: 12),
+
                     Wrap(
                       spacing: 10,
                       runSpacing: 10,
                       children: _interestOptions.map((interest) {
                         final isSelected = _interests.contains(interest);
                         return ChoiceChip(
-                          label: Text(interest),
+                          label: Text(
+                            interest,
+                            style: TextStyle(
+                              fontFamily: 'Comfortaa',
+                              fontSize: 14,
+                              fontWeight:
+                                  isSelected ? FontWeight.w700 : FontWeight.w600,
+                              color: isSelected
+                                  ? const Color(0xFF1E1E1E)
+                                  : const Color(0xFF5B5B5B),
+                              height: 1.2,
+                            ),
+                          ),
                           selected: isSelected,
                           onSelected: (value) {
                             setState(() {
@@ -168,13 +199,6 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                           ),
                           selectedColor: const Color(0xFFDFF9F6),
                           backgroundColor: Colors.white,
-                          labelStyle: TextStyle(
-                            color: isSelected
-                                ? const Color(0xFF1E1E1E)
-                                : const Color(0xFF5B5B5B),
-                            fontWeight:
-                                isSelected ? FontWeight.w600 : FontWeight.w500,
-                          ),
                         );
                       }).toList(),
                     ),
@@ -185,8 +209,10 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                         _error!,
                         style: const TextStyle(
                           color: Colors.red,
+                          fontFamily: 'Comfortaa',
                           fontSize: 13,
                           fontWeight: FontWeight.w600,
+                          height: 1.33,
                         ),
                       ),
                     ],
@@ -218,13 +244,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                                   color: Color(0xFF1B1B1B),
                                 ),
                               )
-                            : const Text(
-                                'Get Started',
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
+                            : const Text('Get Started', style: _buttonComfortaa),
                       ),
                     ),
                     const SizedBox(height: 12),
@@ -250,6 +270,16 @@ class _AgeOptionCard extends StatelessWidget {
   final bool selected;
   final VoidCallback onTap;
 
+  static const Color _titleColor = Color(0xFF363E44);
+
+  static const TextStyle _ageText = TextStyle(
+    fontFamily: 'Comfortaa',
+    fontSize: 14,
+    fontWeight: FontWeight.w700,
+    color: _titleColor,
+    height: 1.33,
+  );
+
   @override
   Widget build(BuildContext context) {
     return Material(
@@ -273,22 +303,11 @@ class _AgeOptionCard extends StatelessWidget {
                   color: selected ? const Color(0xFF7ADBCF) : Colors.white,
                 ),
                 child: selected
-                    ? const Icon(
-                        Icons.check,
-                        size: 14,
-                        color: Colors.white,
-                      )
+                    ? const Icon(Icons.check, size: 14, color: Colors.white)
                     : null,
               ),
               const SizedBox(width: 12),
-              Text(
-                label,
-                style: const TextStyle(
-                  fontSize: 14.5,
-                  fontWeight: FontWeight.w600,
-                  color: Color(0xFF2E2E2E),
-                ),
-              ),
+              Text(label, style: _ageText),
             ],
           ),
         ),

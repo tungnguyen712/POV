@@ -21,6 +21,51 @@ class _ScanScreenState extends State<ScanScreen> {
   // TODO: replace later with real auth user id
   final String _userId = 'test-user-123';
 
+  // ===== Match Login typography/colors =====
+  static const Color _titleColor = Color(0xFF363E44);
+  static const Color _buttonBg = Color(0xFFF05B55);
+
+  static const TextStyle _appBarTilt = TextStyle(
+    fontFamily: 'Tilt Warp',
+    fontSize: 18,
+    fontWeight: FontWeight.w700,
+    color: _titleColor,
+    height: 1.2,
+  );
+
+  static const TextStyle _buttonTextComfortaa = TextStyle(
+    fontFamily: 'Comfortaa',
+    fontSize: 16,
+    fontWeight: FontWeight.w600,
+    height: 1.33,
+  );
+
+  static const TextStyle _snackComfortaa = TextStyle(
+    fontFamily: 'Comfortaa',
+    fontSize: 14,
+    fontWeight: FontWeight.w600,
+    height: 1.33,
+  );
+
+  Future<Position?> _getPosition() async {
+    final serviceEnabled = await Geolocator.isLocationServiceEnabled();
+    if (!serviceEnabled) return null;
+
+    var permission = await Geolocator.checkPermission();
+    if (permission == LocationPermission.denied) {
+      permission = await Geolocator.requestPermission();
+    }
+
+    if (permission == LocationPermission.denied ||
+        permission == LocationPermission.deniedForever) {
+      return null;
+    }
+
+    return Geolocator.getCurrentPosition(
+      desiredAccuracy: LocationAccuracy.medium,
+    );
+  }
+
   Future<void> _scan(ImageSource source) async {
     try {
       final XFile? image = await _picker.pickImage(
@@ -54,7 +99,9 @@ class _ScanScreenState extends State<ScanScreen> {
       if (!mounted) return;
       setState(() => _loading = false);
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('$e')),
+        SnackBar(
+          content: Text('$e', style: _snackComfortaa),
+        ),
       );
     }
   }
@@ -62,23 +109,58 @@ class _ScanScreenState extends State<ScanScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Scan')),
+      backgroundColor: Colors.white,
+      appBar: AppBar(
+        backgroundColor: Colors.white,
+        elevation: 0,
+        title: const Text('Scan', style: _appBarTilt),
+        iconTheme: const IconThemeData(color: _titleColor),
+      ),
       body: Center(
         child: _loading
             ? const CircularProgressIndicator()
             : Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  ElevatedButton.icon(
-                    onPressed: () => _scan(ImageSource.camera),
-                    icon: const Icon(Icons.camera_alt),
-                    label: const Text('Take Photo'),
+                  SizedBox(
+                    width: 260,
+                    height: 48,
+                    child: ElevatedButton.icon(
+                      onPressed: () => _scan(ImageSource.camera),
+                      icon: const Icon(Icons.camera_alt, color: Colors.white),
+                      label: const Text(
+                        'Take Photo',
+                        style: _buttonTextComfortaa,
+                      ),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: _buttonBg,
+                        foregroundColor: Colors.white,
+                        elevation: 0,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                    ),
                   ),
                   const SizedBox(height: 12),
-                  OutlinedButton.icon(
-                    onPressed: () => _scan(ImageSource.gallery),
-                    icon: const Icon(Icons.photo_library),
-                    label: const Text('Choose from Gallery'),
+                  SizedBox(
+                    width: 260,
+                    height: 48,
+                    child: OutlinedButton.icon(
+                      onPressed: () => _scan(ImageSource.gallery),
+                      icon: const Icon(Icons.photo_library, color: _titleColor),
+                      label: const Text(
+                        'Choose from Gallery',
+                        style: _buttonTextComfortaa,
+                      ),
+                      style: OutlinedButton.styleFrom(
+                        foregroundColor: _titleColor,
+                        side: const BorderSide(color: _titleColor, width: 1),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                    ),
                   ),
                 ],
               ),
