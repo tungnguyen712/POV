@@ -147,9 +147,10 @@ async def identify_landmark(
     # cache result for 1hr
     cache_set(cache_key, res, ttl_seconds=60 * 60)
 
-    # save scan to DB
+    # save scan to DB and return scan_id for image upload
+    scan_id = None
     if user_id:
-        queries.save_scan(
+        scan_record = queries.save_scan(
             user_id=user_id,
             landmark_name=res.landmark_name,
             description=res.description,
@@ -157,6 +158,13 @@ async def identify_landmark(
             lng=lng,
             tags=res.tags,
             timestamp=timestamp,
+            image_url=None,  # Will be updated after storage upload
         )
+        if scan_record:
+            scan_id = scan_record.get("id")
+    
+    # Store scan_id in response for later image upload
+    if scan_id:
+        res.scan_id = scan_id
 
     return res

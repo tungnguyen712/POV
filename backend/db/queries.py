@@ -1,6 +1,42 @@
 from typing import Optional, Any
 from datetime import datetime
 from db.supabase import get_supabase
+import uuid
+
+
+def upload_scan_image(user_id: str, image_bytes: bytes, mime_type: str = "image/jpeg") -> Optional[str]:
+    """Upload image to Supabase Storage and return public URL"""
+    try:
+        supabase = get_supabase()
+        
+        # Generate unique filename
+        extension = mime_type.split("/")[-1]
+        filename = f"{user_id}/{uuid.uuid4()}.{extension}"
+        
+        # Upload to storage
+        supabase.storage.from_("scan-images").upload(
+            filename,
+            image_bytes,
+            {"content-type": mime_type}
+        )
+        
+        # Get public URL
+        public_url = supabase.storage.from_("scan-images").get_public_url(filename)
+        return public_url
+    except Exception as e:
+        print(f"ERROR uploading image: {e}")
+        return None
+
+
+def update_scan_image_url(scan_id: str, image_url: str) -> bool:
+    """Update existing scan with image URL"""
+    try:
+        supabase = get_supabase()
+        result = supabase.table("scans").update({"image_url": image_url}).eq("id", scan_id).execute()
+        return bool(result.data)
+    except Exception as e:
+        print(f"ERROR updating scan image URL: {e}")
+        return False
 
 def save_scan(
     user_id: str,
@@ -10,6 +46,7 @@ def save_scan(
     lng: Optional[float],
     tags: list[str],
     timestamp: datetime,
+    image_url: Optional[str] = None,
 ) -> Optional[dict[str, Any]]:
     """Save a landmark scan to the database"""
     try:
@@ -23,6 +60,7 @@ def save_scan(
             "lng": lng,
             "tags": tags,
             "timestamp": timestamp.isoformat(),
+            "image_url": image_url,
         }
 
         result = supabase.table("scans").insert(data).execute()
@@ -41,7 +79,7 @@ def get_scans_for_user(user_id: str, limit: int = 50) -> list[dict[str, Any]]:
         supabase = get_supabase()
         res = (
             supabase.table("scans")
-            .select("id,user_id,landmark_name,tags,timestamp")
+            .select("id,user_id,landmark_name,tags,timestamp,image_url,description,lat,lng")
             .eq("user_id", user_id)
             .order("timestamp", desc=True)
             .limit(limit)

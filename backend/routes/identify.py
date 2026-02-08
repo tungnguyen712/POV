@@ -1,6 +1,7 @@
 from fastapi import APIRouter, UploadFile, File, HTTPException, Form
 from schemas.identify import IdentifyResponse, AgeBracket
 from services.identify_service import identify_landmark
+from db import queries
 from typing import Optional
 
 router = APIRouter(prefix="/identify", tags=["Identify"])
@@ -55,6 +56,21 @@ async def identify_route(
             lat=lat,
             lng=lng,
         )
+        
+        # Upload image to storage if scan was saved
+        if res.scan_id and user_id:
+            try:
+                image_url = queries.upload_scan_image(
+                    user_id=user_id,
+                    image_bytes=image_bytes,
+                    mime_type=actual_mime_type
+                )
+                if image_url:
+                    queries.update_scan_image_url(res.scan_id, image_url)
+            except Exception as img_err:
+                print(f"Warning: Failed to upload image: {img_err}")
+                # Don't fail the whole request if image upload fails
+        
         return res
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))

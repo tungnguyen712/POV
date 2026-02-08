@@ -59,3 +59,4 @@ class IdentifyResponse(BaseModel):
     confidence_score: Optional[float] = None
     needs_confirmation: Optional[bool] = False
     candidates: Optional[List[str]] = None
+    scan_id: Optional[str] = None
