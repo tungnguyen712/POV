@@ -192,7 +192,9 @@ class _ScanScreenState extends State<ScanScreen> with WidgetsBindingObserver {
         _capturedImage = null;
       });
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('$e')),
+        SnackBar(
+          content: Text('$e', style: _snackComfortaa),
+        ),
       );
     }
   }

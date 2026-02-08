@@ -15,3 +15,6 @@ __pycache__/
 build/
 .flutter-plugins
 .flutter-plugins-dependencies
+# Python cache
+__pycache__/
+*.pyc

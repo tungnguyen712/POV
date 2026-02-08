@@ -9,6 +9,8 @@ import 'screens/camera/scan_screen.dart';
 import 'screens/landmark/result_screen.dart';
 import 'services/landmark_service.dart';
 import 'screens/home/nav_bar.dart';
+import 'screens/wrap/wrap_screen.dart';
+
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -42,6 +44,7 @@ class LandmarkApp extends StatelessWidget {
         '/onboarding': (context) => const OnboardingScreen(),
         '/scan': (context) => const ScanScreen(),
         '/nav_bar': (context) => HomeScreen(),
+        '/wrap': (context) => const WrapScreen(),
       },
     );
   }
