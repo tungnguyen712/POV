@@ -41,7 +41,7 @@ def get_scans_for_user(user_id: str, limit: int = 50) -> list[dict[str, Any]]:
         supabase = get_supabase()
         res = (
             supabase.table("scans")
-            .select("id,user_id,landmark_name,tags,timestamp")
+            .select("id,user_id,landmark_name,description,lat,lng,tags,timestamp")
             .eq("user_id", user_id)
             .order("timestamp", desc=True)
             .limit(limit)

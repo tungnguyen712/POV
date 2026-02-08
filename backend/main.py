@@ -2,7 +2,7 @@ import os
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from dotenv import load_dotenv
-from routes import identify, wrapped
+from routes import identify, wrapped, scans
 import uvicorn
 from routes.auth import router as auth_router
 from routes.chat import router as chat_router
@@ -24,6 +24,7 @@ app.include_router(auth_router)
 app.include_router(chat_router)
 app.include_router(identify.router)
 app.include_router(wrapped.router)
+app.include_router(scans.router)
 
 @app.get("/")
 async def root():
