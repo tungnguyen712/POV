@@ -173,38 +173,16 @@ class _LandmarkResultScreenState extends State<LandmarkResultScreen> {
 
     return Scaffold(
       backgroundColor: Colors.white,
+      appBar: AppBar(
+        backgroundColor: AppColors.topBarBackground,
+        elevation: 0,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: Colors.black),
+          onPressed: () => Navigator.pop(context),
+        ),
+      ),
       body: SafeArea(
-        child: Column(
-          children: [
-            // TOP BAR
-            Container(
-              padding: const EdgeInsets.all(16),
-              color: AppColors.topBarBackground,
-              child: Row(
-                children: [
-                  IconButton(
-                    icon: const Icon(Icons.arrow_back),
-                    onPressed: () => Navigator.pop(context),
-                  ),
-                  const Expanded(
-                    child: Text(
-                      'Landmark Identify',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        fontFamily: 'Tilt Warp',
-                        fontSize: 20,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 48),
-                ],
-              ),
-            ),
-
-            // CONTENT
-            Expanded(
-              child: SingleChildScrollView(
+        child: SingleChildScrollView(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -341,9 +319,6 @@ class _LandmarkResultScreenState extends State<LandmarkResultScreen> {
                 ),
               ),
             ),
-          ],
-        ),
-      ),
     );
   }
 

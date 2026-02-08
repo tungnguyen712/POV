@@ -1,172 +1,168 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import '../../services/user_service.dart';
 
-class ProfileDashboard extends StatelessWidget {
+class ProfileDashboard extends StatefulWidget {
   const ProfileDashboard({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    final supabase = Supabase.instance.client;
-    final user = supabase.auth.currentUser;
-    
-    // Mock values for now (replace with Supabase later)
-    const int placesVisited = 12;
-    const int scansThisWeek = 3;
-    const int streakDays = 2;
+  State<ProfileDashboard> createState() => _ProfileDashboardState();
+}
 
-    final recent = const [
-      _RecentScan(title: 'Fushimi Inari', subtitle: 'Kyoto • Yesterday'),
-      _RecentScan(title: 'Kinkaku-ji', subtitle: 'Kyoto • 3 days ago'),
-      _RecentScan(title: 'Tokyo Tower', subtitle: 'Tokyo • Last week'),
-    ];
+class _ProfileDashboardState extends State<ProfileDashboard> {
+  final UserService _userService = UserService();
+  final supabase = Supabase.instance.client;
+
+  @override
+  Widget build(BuildContext context) {
+    final user = supabase.auth.currentUser;
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Profile'),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.settings),
-            onPressed: () {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Settings coming soon')),
+      body: FutureBuilder<Map<String, dynamic>?>(
+        future: _userService.getUserProfileWithStats(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          }
+
+          // Extract data or use defaults
+          final profileData = snapshot.data;
+          final stats = profileData?['stats'] ?? {};
+          final profile = profileData?['profile'] ?? {};
+          
+          final int placesVisited = stats['places_visited'] ?? 0;
+          final int scansThisWeek = stats['scans_this_week'] ?? 0;
+          final int streakDays = stats['streak_days'] ?? 0;
+          final String displayName = profile['username'] ?? user?.email ?? 'User';
+
+          return FutureBuilder<List<Map<String, dynamic>>>(
+            future: _userService.getRecentScans(limit: 3),
+            builder: (context, scansSnapshot) {
+              return ListView(
+                padding: const EdgeInsets.all(16),
+                children: [
+                  const SizedBox(height: 24),
+                  // Profile Header
+                  Center(
+                    child: Column(
+                      children: [
+                        CircleAvatar(
+                          radius: 50,
+                          child: Text(
+                            displayName.substring(0, 1).toUpperCase(),
+                            style: const TextStyle(
+                                fontSize: 32, fontWeight: FontWeight.bold),
+                          ),
+                        ),
+                        const SizedBox(height: 12),
+                        Text(
+                          displayName,
+                          style: const TextStyle(
+                              fontSize: 18, fontWeight: FontWeight.w700),
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          user?.createdAt != null 
+                              ? 'Member since ${DateTime.parse(user!.createdAt).year}'
+                              : 'Member since ${DateTime.now().year}',
+                          style: const TextStyle(fontSize: 13, color: Colors.grey),
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  const SizedBox(height: 24),
+
+                  // Stats row
+                  Row(
+                    children: [
+                      _StatCard(
+                          icon: Icons.place,
+                          iconColor: Colors.blue,
+                          label: 'Places',
+                          value: '$placesVisited'),
+                      const SizedBox(width: 12),
+                      _StatCard(
+                          icon: Icons.calendar_month,
+                          label: 'This week',
+                          value: '$scansThisWeek'),
+                      const SizedBox(width: 12),
+                      _StatCard(
+                          icon: Icons.local_fire_department,
+                          iconColor: Colors.red,
+                          label: 'Streak',
+                          value: '${streakDays}'),
+                    ],
+                  ),
+
+                  const SizedBox(height: 24),
+
+                  // Account Actions
+                  const Text(
+                    'Account',
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
+                  ),
+                  const SizedBox(height: 8),
+
+                  Card(
+                    child: Column(
+                      children: [
+                        ListTile(
+                          leading: const Icon(Icons.edit),
+                          title: const Text('Edit Profile'),
+                          trailing: const Icon(Icons.chevron_right),
+                          onTap: () {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                  content: Text('Edit profile coming soon')),
+                            );
+                          },
+                        ),
+                        const Divider(height: 1),
+                        ListTile(
+                          leading: const Icon(Icons.notifications, color: Colors.amber),
+                          title: const Text('Notifications'),
+                          trailing: const Icon(Icons.chevron_right),
+                          onTap: () {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                  content: Text('Notifications coming soon')),
+                            );
+                          },
+                        ),
+                        const Divider(height: 1),
+                        ListTile(
+                          leading: const Icon(Icons.privacy_tip),
+                          title: const Text('Privacy'),
+                          trailing: const Icon(Icons.chevron_right),
+                          onTap: () {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                  content: Text('Privacy settings coming soon')),
+                            );
+                          },
+                        ),
+                        const Divider(height: 1),
+                        ListTile(
+                          leading: const Icon(Icons.logout, color: Colors.red),
+                          title: const Text('Sign Out',
+                              style: TextStyle(color: Colors.red)),
+                          onTap: () async {
+                            await supabase.auth.signOut();
+                            if (context.mounted) {
+                              Navigator.of(context)
+                                  .pushReplacementNamed('/login');
+                            }
+                          },
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
               );
             },
-          ),
-        ],
-      ),
-      body: ListView(
-        padding: const EdgeInsets.all(16),
-        children: [
-          // Profile Header
-          Center(
-            child: Column(
-              children: [
-                CircleAvatar(
-                  radius: 50,
-                  child: Text(
-                    user?.email?.substring(0, 1).toUpperCase() ?? 'U',
-                    style: const TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
-                  ),
-                ),
-                const SizedBox(height: 12),
-                Text(
-                  user?.email ?? 'User',
-                  style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  'Member since ${DateTime.now().year - 1}',
-                  style: const TextStyle(fontSize: 13, color: Colors.grey),
-                ),
-              ],
-            ),
-          ),
-
-          const SizedBox(height: 24),
-
-          // Stats row
-          Row(
-            children: [
-              _StatCard(
-                  icon: Icons.place, label: 'Places', value: '$placesVisited'),
-              const SizedBox(width: 12),
-              _StatCard(
-                  icon: Icons.calendar_month,
-                  label: 'This week',
-                  value: '$scansThisWeek'),
-              const SizedBox(width: 12),
-              _StatCard(
-                  icon: Icons.local_fire_department,
-                  label: 'Streak',
-                  value: '${streakDays}d'),
-            ],
-          ),
-
-          const SizedBox(height: 24),
-
-          // Recent Activity
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              const Text(
-                'Recent Activity',
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
-              ),
-              TextButton(
-                onPressed: () {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                        content: Text('View full history coming soon')),
-                  );
-                },
-                child: const Text('See all'),
-              ),
-            ],
-          ),
-
-          const SizedBox(height: 8),
-
-          ...recent.map((r) => _RecentScanTile(scan: r)),
-
-          const SizedBox(height: 24),
-
-          // Account Actions
-          const Text(
-            'Account',
-            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
-          ),
-          const SizedBox(height: 8),
-
-          Card(
-            child: Column(
-              children: [
-                ListTile(
-                  leading: const Icon(Icons.edit),
-                  title: const Text('Edit Profile'),
-                  trailing: const Icon(Icons.chevron_right),
-                  onTap: () {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Edit profile coming soon')),
-                    );
-                  },
-                ),
-                const Divider(height: 1),
-                ListTile(
-                  leading: const Icon(Icons.notifications),
-                  title: const Text('Notifications'),
-                  trailing: const Icon(Icons.chevron_right),
-                  onTap: () {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Notifications coming soon')),
-                    );
-                  },
-                ),
-                const Divider(height: 1),
-                ListTile(
-                  leading: const Icon(Icons.privacy_tip),
-                  title: const Text('Privacy'),
-                  trailing: const Icon(Icons.chevron_right),
-                  onTap: () {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Privacy settings coming soon')),
-                    );
-                  },
-                ),
-                const Divider(height: 1),
-                ListTile(
-                  leading: const Icon(Icons.logout, color: Colors.red),
-                  title: const Text('Sign Out', style: TextStyle(color: Colors.red)),
-                  onTap: () async {
-                    await supabase.auth.signOut();
-                    if (context.mounted) {
-                      Navigator.of(context).pushReplacementNamed('/login');
-                    }
-                  },
-                ),
-              ],
-            ),
-          ),
-        ],
+          );
+        },
       ),
     );
   }
@@ -174,11 +170,13 @@ class ProfileDashboard extends StatelessWidget {
 
 class _StatCard extends StatelessWidget {
   final IconData icon;
+  final Color? iconColor;
   final String label;
   final String value;
 
   const _StatCard({
     required this.icon,
+    this.iconColor,
     required this.label,
     required this.value,
   });
@@ -192,7 +190,7 @@ class _StatCard extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Icon(icon),
+              Icon(icon, color: iconColor),
               const SizedBox(height: 10),
               Text(value,
                   style: const TextStyle(
@@ -202,35 +200,6 @@ class _StatCard extends StatelessWidget {
             ],
           ),
         ),
-      ),
-    );
-  }
-}
-
-class _RecentScan {
-  final String title;
-  final String subtitle;
-  const _RecentScan({required this.title, required this.subtitle});
-}
-
-class _RecentScanTile extends StatelessWidget {
-  final _RecentScan scan;
-  const _RecentScanTile({required this.scan});
-
-  @override
-  Widget build(BuildContext context) {
-    return Card(
-      child: ListTile(
-        leading: const CircleAvatar(child: Icon(Icons.image)),
-        title: Text(scan.title,
-            style: const TextStyle(fontWeight: FontWeight.w700)),
-        subtitle: Text(scan.subtitle),
-        trailing: const Icon(Icons.chevron_right),
-        onTap: () {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Scan details coming soon')),
-          );
-        },
       ),
     );
   }

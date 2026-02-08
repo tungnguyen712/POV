@@ -55,20 +55,134 @@ def get_scans_for_user(user_id: str, limit: int = 50) -> list[dict[str, Any]]:
     return []
 
 
+def get_user_stats(user_id: str) -> dict[str, Any]:
+    """Get user statistics from scans table"""
+    try:
+        supabase = get_supabase()
+        
+        # Get total places visited (distinct landmarks)
+        all_scans = (
+            supabase.table("scans")
+            .select("landmark_name, timestamp")
+            .eq("user_id", user_id)
+            .execute()
+        )
+        
+        scans_data = all_scans.data if all_scans.data else []
+        
+        # Ensure we have a list of dicts
+        if not isinstance(scans_data, list):
+            scans_data = []
+        
+        # Count unique landmarks
+        unique_landmarks = set()
+        for scan in scans_data:
+            if isinstance(scan, dict) and scan.get("landmark_name"):
+                unique_landmarks.add(scan["landmark_name"])
+        places_visited = len(unique_landmarks)
+        
+        # Count scans this week
+        from datetime import datetime, timedelta, timezone
+        week_ago = datetime.now(timezone.utc) - timedelta(days=7)
+        scans_this_week = 0
+        
+        for scan in scans_data:
+            if isinstance(scan, dict) and scan.get("timestamp"):
+                try:
+                    timestamp_str = str(scan["timestamp"])
+                    scan_time = datetime.fromisoformat(timestamp_str.replace("Z", "+00:00"))
+                    if scan_time > week_ago:
+                        scans_this_week += 1
+                except (ValueError, KeyError):
+                    continue
+        
+        # Calculate streak: once every 3 days counts as 1 streak point
+        streak_days = 0
+        if scans_data:
+            # Extract all scan dates
+            scan_dates = set()
+            for scan in scans_data:
+                if isinstance(scan, dict) and scan.get("timestamp"):
+                    try:
+                        timestamp_str = str(scan["timestamp"])
+                        scan_time = datetime.fromisoformat(timestamp_str.replace("Z", "+00:00"))
+                        scan_dates.add(scan_time.date())
+                    except (ValueError, KeyError):
+                        continue
+            
+            if scan_dates:
+                # Start from today and go backwards in 3-day periods
+                today = datetime.now(timezone.utc).date()
+                current_date = today
+                
+                # Check each 3-day period going backwards
+                while True:
+                    period_start = current_date - timedelta(days=2)
+                    period_end = current_date
+                    
+                    # Check if there's at least one scan in this 3-day period
+                    has_scan_in_period = any(
+                        period_start <= scan_date <= period_end 
+                        for scan_date in scan_dates
+                    )
+                    
+                    if has_scan_in_period:
+                        streak_days += 1
+                        # Move to next 3-day period backwards
+                        current_date = period_start - timedelta(days=1)
+                    else:
+                        # Streak is broken
+                        break
+                    
+                    # Stop if we've gone too far back (e.g., 1 year)
+                    if (today - current_date).days > 365:
+                        break
+        
+        return {
+            "places_visited": places_visited,
+            "scans_this_week": scans_this_week,
+            "streak_days": streak_days,
+        }
+    except Exception as e:
+        print(f"ERROR getting user stats: {e}")
+        return {
+            "places_visited": 0,
+            "scans_this_week": 0,
+            "streak_days": 0,
+        }
+
+
 def get_profile(user_id: str) -> Optional[dict[str, Any]]:
     """Get user profile from the database"""
-    # TODO: Replace with real database query once user DB is ready
-    mock_profiles = {
-        "test-user-123": {
-            "user_id": "test-user-123",
-            "age_bracket": "adult",
-            "interests": ["history", "architecture", "art", "culture"]
-        },
-        "kid-user": {
-            "user_id": "kid-user",
-            "age_bracket": "kid",
-            "interests": ["animals", "nature", "science"]
-        }
-    }
-
-    return mock_profiles.get(user_id)
+    try:
+        supabase = get_supabase()
+        result = (
+            supabase.table("profiles")
+            .select("id, username, email, age_group, interest, onboarding_done")
+            .eq("id", user_id)
+            .maybe_single()
+            .execute()
+        )
+        
+        if result and result.data and isinstance(result.data, dict):
+            profile = result.data
+            
+            # Map database columns to expected format
+            interest_str = profile.get("interest")
+            interests_list = []
+            if interest_str and isinstance(interest_str, str):
+                interests_list = [i.strip() for i in interest_str.split(",") if i.strip()]
+            
+            mapped_profile = {
+                "user_id": profile.get("id"),
+                "age_bracket": profile.get("age_group"),
+                "interests": interests_list,
+                "username": profile.get("username"),
+                "email": profile.get("email"),
+            }
+            return mapped_profile
+        else:
+            print(f"[get_profile] No valid profile data found. Result exists: {result is not None}, Has data: {result.data if result else 'N/A'}")
+    except Exception as e:
+        print(f"ERROR getting profile: {e}")
+    return None

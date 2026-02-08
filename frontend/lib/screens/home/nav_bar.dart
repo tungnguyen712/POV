@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../camera/scan_screen.dart';
 import '../profile/profile_dashboard.dart';
+import '../chatbot/chatbot_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -16,8 +17,8 @@ class _HomeScreenState extends State<HomeScreen> {
     _PlaceholderPage(title: 'Calendar (Events)'),
     _PlaceholderPage(title: 'Location (Nearby)'),
     ScanScreen(),
-    _PlaceholderPage(title: 'Search'),
-    ProfileDashboard(),
+    ChatbotScreen(),
+    ProfileDashboard()
   ];
 
   static const double _iconSize = 28; // 👈 phóng to icon

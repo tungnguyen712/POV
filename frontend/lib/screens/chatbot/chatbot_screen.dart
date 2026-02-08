@@ -3,14 +3,14 @@ import '../../services/chat_service.dart';
 import '../../constants/colors.dart';
 
 class ChatbotScreen extends StatefulWidget {
-  final String landmarkName;
-  final String landmarkDescription;
+  final String? landmarkName;
+  final String? landmarkDescription;
   final String? initialQuestion;
 
   const ChatbotScreen({
     super.key,
-    required this.landmarkName,
-    required this.landmarkDescription,
+    this.landmarkName,
+    this.landmarkDescription,
     this.initialQuestion,
   });
 
@@ -55,8 +55,8 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
     try {
       // Get AI response with suggested questions
       final chatResponse = await _chatService.sendMessage(
-        landmarkName: widget.landmarkName,
-        landmarkInfo: widget.landmarkDescription,
+        landmarkName: widget.landmarkName ?? 'General',
+        landmarkInfo: widget.landmarkDescription ?? 'General landmark and travel assistant',
         conversationHistory: _messages,
         userMessage: userMessage,
       );
@@ -101,10 +101,13 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
       appBar: AppBar(
         backgroundColor: AppColors.topBarBackground,
         elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.black),
-          onPressed: () => Navigator.pop(context),
-        ),
+        automaticallyImplyLeading: widget.landmarkName != null,
+        leading: widget.landmarkName != null
+            ? IconButton(
+                icon: const Icon(Icons.arrow_back, color: Colors.black),
+                onPressed: () => Navigator.pop(context),
+              )
+            : null,
         title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -117,14 +120,15 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
                 color: Colors.black,
               ),
             ),
-            Text(
-              widget.landmarkName,
-              style: const TextStyle(
-                fontFamily: 'Arimo',
-                fontSize: 13,
-                color: Colors.black54,
+            if (widget.landmarkName != null)
+              Text(
+                widget.landmarkName!,
+                style: const TextStyle(
+                  fontFamily: 'Arimo',
+                  fontSize: 13,
+                  color: Colors.black54,
+                ),
               ),
-            ),
           ],
         ),
       ),
@@ -144,7 +148,9 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
                         ),
                         const SizedBox(height: 16),
                         Text(
-                          'Ask me anything about\n${widget.landmarkName}',
+                          widget.landmarkName != null
+                              ? 'Ask me anything about\n${widget.landmarkName}'
+                              : 'Ask me anything about\nlandmarks and travel',
                           textAlign: TextAlign.center,
                           style: TextStyle(
                             fontFamily: 'Arimo',

@@ -17,12 +17,15 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
 
   SupabaseClient get _sb => Supabase.instance.client;
 
-  final List<String> _ageGroups = <String>[
-    '0-12 (Kid)',
-    '13-17 (Teen)',
-    '18-59 (Adult)',
-    '60+ (Senior)',
-  ];
+  // Map display text to backend keys
+  final Map<String, String> _ageGroupMap = {
+    '0-12 (Kid)': 'kid',
+    '13-17 (Teen)': 'teen',
+    '18-59 (Adult)': 'adult',
+    '60+ (Senior)': 'senior',
+  };
+
+  List<String> get _ageGroups => _ageGroupMap.keys.toList();
 
   final List<String> _interestOptions = <String>[
     'History',
@@ -60,10 +63,13 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       // interest column is text => store as comma-separated string
       final interestText = _interests.isEmpty ? null : _interests.join(', ');
 
+      // Convert display text to backend key value
+      final ageGroupKey = _selectedAge != null ? _ageGroupMap[_selectedAge] : null;
+
       await _sb.from('profiles').upsert({
         'id': user.id,
         'email': user.email,
-        'age_group': _selectedAge,
+        'age_group': ageGroupKey,
         'interest': _interests.isEmpty ? null : _interests.join(', '),
         'onboarding_done': true,
       });

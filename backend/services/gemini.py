@@ -47,7 +47,7 @@ def gemini_identify(image_bytes: bytes, mime_type: str, req: IdentifyRequest) ->
             thinking_config=types.ThinkingConfig(
                 thinking_level=types.ThinkingLevel.LOW
             ),
-            max_output_tokens=800,
+            max_output_tokens=2000,
             response_mime_type="application/json",
             response_json_schema=IdentifyResponse.model_json_schema(),
             media_resolution=types.MediaResolution.MEDIA_RESOLUTION_MEDIUM,
