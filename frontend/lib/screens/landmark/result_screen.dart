@@ -67,6 +67,67 @@ class _LandmarkResultScreenState extends State<LandmarkResultScreen> {
   // ===================== STATE =====================
   int _nearbyTab = 0;
 
+  // ===================== STYLES (match Wrap/Profile) =====================
+  static const Color _titleColor = Color(0xFF363E44);
+  static const Color _muted = Color(0xFF9CA3AF);
+  static const Color _teal = Color(0xFF1F8A70);
+  static const Color _mint = Color(0xFFE6F4F1);
+
+  static const TextStyle _titleTilt = TextStyle(
+    fontFamily: 'Tilt Warp',
+    fontSize: 26,
+    fontWeight: FontWeight.w700,
+    height: 1.15,
+    color: _titleColor,
+  );
+
+  static const TextStyle _sectionComfortaa = TextStyle(
+    fontFamily: 'Comfortaa',
+    fontSize: 18,
+    fontWeight: FontWeight.w700,
+    height: 1.25,
+    color: _titleColor,
+  );
+
+  static const TextStyle _bodyComfortaa = TextStyle(
+    fontFamily: 'Comfortaa',
+    fontSize: 16,
+    fontWeight: FontWeight.w500,
+    height: 1.5,
+    color: _titleColor,
+  );
+
+  static const TextStyle _bulletComfortaa = TextStyle(
+    fontFamily: 'Comfortaa',
+    fontSize: 15,
+    fontWeight: FontWeight.w500,
+    height: 1.35,
+    color: _titleColor,
+  );
+
+  static const TextStyle _tileTitleComfortaa = TextStyle(
+    fontFamily: 'Comfortaa',
+    fontSize: 15,
+    fontWeight: FontWeight.w700,
+    height: 1.2,
+    color: _titleColor,
+  );
+
+  static const TextStyle _tileSubComfortaa = TextStyle(
+    fontFamily: 'Comfortaa',
+    fontSize: 13,
+    fontWeight: FontWeight.w500,
+    height: 1.2,
+    color: _muted,
+  );
+
+  static const TextStyle _tabTextComfortaa = TextStyle(
+    fontFamily: 'Comfortaa',
+    fontSize: 14,
+    fontWeight: FontWeight.w700,
+    height: 1.2,
+  );
+
   // ===================== HELPERS =====================
   List<Map<String, dynamic>> _asMapList(dynamic value) {
     if (value is List) {
@@ -114,8 +175,8 @@ class _LandmarkResultScreenState extends State<LandmarkResultScreen> {
     final ampm = hour24 >= 12 ? 'PM' : 'AM';
     final minute = local.minute.toString().padLeft(2, '0');
     const months = [
-      'Jan','Feb','Mar','Apr','May','Jun',
-      'Jul','Aug','Sep','Oct','Nov','Dec'
+      'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+      'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
     ];
     return '${months[local.month - 1]} ${local.day}, ${local.year} • $hour12:$minute $ampm';
   }
@@ -129,21 +190,32 @@ class _LandmarkResultScreenState extends State<LandmarkResultScreen> {
         child: Container(
           padding: const EdgeInsets.symmetric(vertical: 10),
           decoration: BoxDecoration(
-            color: isActive ? const Color(0xFF1F8A70) : const Color(0xFFE6F4F1),
+            color: isActive ? _teal : _mint,
             borderRadius: BorderRadius.circular(8),
           ),
           child: Text(
             label,
             textAlign: TextAlign.center,
-            style: TextStyle(
-              fontFamily: 'Arimo',
-              fontSize: 14,
-              fontWeight: FontWeight.w600,
-              color: isActive ? Colors.white : const Color(0xFF1F8A70),
+            style: _tabTextComfortaa.copyWith(
+              color: isActive ? Colors.white : _teal,
             ),
           ),
         ),
       ),
+    );
+  }
+
+  Widget _sectionTitle(String text) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      child: Text(text, style: _sectionComfortaa),
+    );
+  }
+
+  Widget _bullet(String text) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+      child: Text('• $text', style: _bulletComfortaa),
     );
   }
 
@@ -159,10 +231,8 @@ class _LandmarkResultScreenState extends State<LandmarkResultScreen> {
         .join('. ');
 
     final funFacts = widget.landmarkData['fun_facts'] ?? {};
-    final matchFacts =
-        List<String>.from(funFacts['match_facts'] ?? []);
-    final discoveryFacts =
-        List<String>.from(funFacts['discovery_facts'] ?? []);
+    final matchFacts = List<String>.from(funFacts['match_facts'] ?? []);
+    final discoveryFacts = List<String>.from(funFacts['discovery_facts'] ?? []);
 
     final nearby = widget.landmarkData['nearby'] ?? {};
     final nearbyLandmarks = _asMapList(nearby['landmarks']);
@@ -185,245 +255,213 @@ class _LandmarkResultScreenState extends State<LandmarkResultScreen> {
       ),
       body: SafeArea(
         child: SingleChildScrollView(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              AspectRatio(
+                aspectRatio: 1,
+                child: Image.file(widget.imageFile, fit: BoxFit.cover),
+              ),
+
+              Padding(
+                padding: const EdgeInsets.all(16),
+                child: Row(
                   children: [
-                    AspectRatio(
-                      aspectRatio: 1,
-                      child: Image.file(widget.imageFile, fit: BoxFit.cover),
-                    ),
-
-                    Padding(
-                      padding: const EdgeInsets.all(16),
-                      child: Row(
-                        children: [
-                          const Icon(Icons.location_on),
-                          const SizedBox(width: 8),
-                          Expanded(
-                            child: Text(
-                              landmarkName,
-                              style: const TextStyle(
-                                fontFamily: 'Arimo',
-                                fontSize: 26,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ),
-                          IconButton(
-                            icon: Icon(
-                              _isSpeaking
-                                  ? Icons.volume_up
-                                  : Icons.volume_up_outlined,
-                            ),
-                            onPressed: () => _toggleSpeech(ttsText),
-                          ),
-                        ],
-                      ),
-                    ),
-
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                    const Icon(Icons.location_on),
+                    const SizedBox(width: 8),
+                    Expanded(
                       child: Text(
-                        description,
-                        style: const TextStyle(
-                          fontFamily: 'Arimo',
-                          fontSize: 16,
-                          height: 1.5,
-                        ),
+                        landmarkName,
+                        style: _titleTilt,
                       ),
                     ),
-
-                    if (matchFacts.isNotEmpty) ...[
-                      const SizedBox(height: 24),
-                      const Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 16),
-                        child: Text(
-                          'Just for You',
-                          style: TextStyle(
-                            fontFamily: 'Arimo',
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
+                    IconButton(
+                      icon: Icon(
+                        _isSpeaking ? Icons.volume_up : Icons.volume_up_outlined,
+                        color: _titleColor,
                       ),
-                      ...matchFacts.map((f) => Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
-                        child: Text('• $f'),
-                      )),
-                    ],
-
-                    if (discoveryFacts.isNotEmpty) ...[
-                      const SizedBox(height: 24),
-                      const Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 16),
-                        child: Text(
-                          'Fun Facts',
-                          style: TextStyle(
-                            fontFamily: 'Arimo',
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
-                      ...discoveryFacts.map((f) => Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
-                        child: Text('• $f'),
-                      )),
-                    ],
-
-                    if (nearbyLandmarks.isNotEmpty || nearbyFood.isNotEmpty) ...[
-                      const SizedBox(height: 24),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 16),
-                        child: Row(
-                          children: [
-                            _buildNearbyTabButton('Landmarks', 0),
-                            const SizedBox(width: 8),
-                            _buildNearbyTabButton('Food', 1),
-                          ],
-                        ),
-                      ),
-                      const SizedBox(height: 12),
-                      // Display nearby content
-                      if (_nearbyTab == 0 && nearbyLandmarks.isNotEmpty)
-                        ...nearbyLandmarks.map((place) {
-                          final name = place['name'] ?? '';
-                          final vicinity = place['vicinity'] ?? '';
-                          final distance = _formatDistance(place['distance']);
-                          final rating = _formatRating(place['rating'], place['user_ratings_total']);
-                          final openNow = _formatOpenNow(place['open_now']);
-                          
-                          return ListTile(
-                            leading: const Icon(Icons.location_on, color: Color(0xFF1F8A70)),
-                            title: Text(name, style: const TextStyle(fontWeight: FontWeight.w600)),
-                            subtitle: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                if (vicinity.isNotEmpty) Text(vicinity),
-                                Row(
-                                  children: [
-                                    if (distance.isNotEmpty) Text(distance),
-                                    if (rating.isNotEmpty) ...[
-                                      if (distance.isNotEmpty) const Text(' • '),
-                                      const Icon(Icons.star, size: 14, color: Colors.amber),
-                                      Text(' $rating'),
-                                    ],
-                                    if (openNow.isNotEmpty) ...[
-                                      if (distance.isNotEmpty || rating.isNotEmpty) const Text(' • '),
-                                      Text(openNow),
-                                    ],
-                                  ],
-                                ),
-                              ],
-                            ),
-                          );
-                        }),
-                      if (_nearbyTab == 1 && nearbyFood.isNotEmpty)
-                        ...nearbyFood.map((place) {
-                          final name = place['name'] ?? '';
-                          final vicinity = place['vicinity'] ?? '';
-                          final distance = _formatDistance(place['distance']);
-                          final rating = _formatRating(place['rating'], place['user_ratings_total']);
-                          final openNow = _formatOpenNow(place['open_now']);
-                          
-                          return ListTile(
-                            leading: const Icon(Icons.restaurant, color: Color(0xFF1F8A70)),
-                            title: Text(name, style: const TextStyle(fontWeight: FontWeight.w600)),
-                            subtitle: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                if (vicinity.isNotEmpty) Text(vicinity),
-                                Row(
-                                  children: [
-                                    if (distance.isNotEmpty) Text(distance),
-                                    if (rating.isNotEmpty) ...[
-                                      if (distance.isNotEmpty) const Text(' • '),
-                                      const Icon(Icons.star, size: 14, color: Colors.amber),
-                                      Text(' $rating'),
-                                    ],
-                                    if (openNow.isNotEmpty) ...[
-                                      if (distance.isNotEmpty || rating.isNotEmpty) const Text(' • '),
-                                      Text(openNow),
-                                    ],
-                                  ],
-                                ),
-                              ],
-                            ),
-                          );
-                        }),
-                    ],
-
-                    if (events.isNotEmpty) ...[
-                      const SizedBox(height: 24),
-                      const Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 16),
-                        child: Text(
-                          'Nearby Events',
-                          style: TextStyle(
-                            fontFamily: 'Arimo',
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: 12),
-                      ...events.map((event) {
-                        final name = event['name'] ?? '';
-                        final venue = event['venue'] ?? '';
-                        final dateTime = _formatEventDateTime(event['date']);
-                        final distance = _formatDistance(event['distance']);
-                        
-                        return ListTile(
-                          leading: const Icon(Icons.event, color: Color(0xFF1F8A70)),
-                          title: Text(name, style: const TextStyle(fontWeight: FontWeight.w600)),
-                          subtitle: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              if (venue.isNotEmpty) Text(venue),
-                              if (dateTime.isNotEmpty) Text(dateTime),
-                              if (distance.isNotEmpty) Text(distance),
-                            ],
-                          ),
-                        );
-                      }),
-                    ],
-
-                    if (suggestedQuestions.isNotEmpty) ...[
-                      const SizedBox(height: 24),
-                      const Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 16),
-                        child: Text(
-                          'Ask Me About',
-                          style: TextStyle(
-                            fontFamily: 'Arimo',
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
-                      ...suggestedQuestions.map((q) => ListTile(
-                        leading: const Icon(Icons.chat_bubble_outline),
-                        title: Text(q),
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (_) => ChatbotScreen(
-                                landmarkName: landmarkName,
-                                landmarkDescription: description,
-                                initialQuestion: q,
-                              ),
-                            ),
-                          );
-                        },
-                      )),
-                    ],
-
-                    const SizedBox(height: 80),
+                      onPressed: () => _toggleSpeech(ttsText),
+                    ),
                   ],
                 ),
               ),
-            ),
+
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: Text(
+                  description,
+                  style: _bodyComfortaa,
+                ),
+              ),
+
+              if (matchFacts.isNotEmpty) ...[
+                const SizedBox(height: 24),
+                _sectionTitle('Just for You'),
+                ...matchFacts.map(_bullet),
+              ],
+
+              if (discoveryFacts.isNotEmpty) ...[
+                const SizedBox(height: 24),
+                _sectionTitle('Fun Facts'),
+                ...discoveryFacts.map(_bullet),
+              ],
+
+              if (nearbyLandmarks.isNotEmpty || nearbyFood.isNotEmpty) ...[
+                const SizedBox(height: 24),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: Row(
+                    children: [
+                      _buildNearbyTabButton('Landmarks', 0),
+                      const SizedBox(width: 8),
+                      _buildNearbyTabButton('Food', 1),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 12),
+
+                if (_nearbyTab == 0 && nearbyLandmarks.isNotEmpty)
+                  ...nearbyLandmarks.map((place) {
+                    final name = place['name'] ?? '';
+                    final vicinity = place['vicinity'] ?? '';
+                    final distance = _formatDistance(place['distance']);
+                    final rating = _formatRating(
+                      place['rating'],
+                      place['user_ratings_total'],
+                    );
+                    final openNow = _formatOpenNow(place['open_now']);
+
+                    return ListTile(
+                      leading: const Icon(Icons.location_on, color: _teal),
+                      title: Text(name, style: _tileTitleComfortaa),
+                      subtitle: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          if (vicinity.isNotEmpty)
+                            Text(vicinity, style: _tileSubComfortaa),
+                          Row(
+                            children: [
+                              if (distance.isNotEmpty)
+                                Text(distance, style: _tileSubComfortaa),
+                              if (rating.isNotEmpty) ...[
+                                if (distance.isNotEmpty)
+                                  Text(' • ', style: _tileSubComfortaa),
+                                const Icon(Icons.star,
+                                    size: 14, color: Colors.amber),
+                                Text(' $rating', style: _tileSubComfortaa),
+                              ],
+                              if (openNow.isNotEmpty) ...[
+                                if (distance.isNotEmpty || rating.isNotEmpty)
+                                  Text(' • ', style: _tileSubComfortaa),
+                                Text(openNow, style: _tileSubComfortaa),
+                              ],
+                            ],
+                          ),
+                        ],
+                      ),
+                    );
+                  }),
+
+                if (_nearbyTab == 1 && nearbyFood.isNotEmpty)
+                  ...nearbyFood.map((place) {
+                    final name = place['name'] ?? '';
+                    final vicinity = place['vicinity'] ?? '';
+                    final distance = _formatDistance(place['distance']);
+                    final rating = _formatRating(
+                      place['rating'],
+                      place['user_ratings_total'],
+                    );
+                    final openNow = _formatOpenNow(place['open_now']);
+
+                    return ListTile(
+                      leading: const Icon(Icons.restaurant, color: _teal),
+                      title: Text(name, style: _tileTitleComfortaa),
+                      subtitle: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          if (vicinity.isNotEmpty)
+                            Text(vicinity, style: _tileSubComfortaa),
+                          Row(
+                            children: [
+                              if (distance.isNotEmpty)
+                                Text(distance, style: _tileSubComfortaa),
+                              if (rating.isNotEmpty) ...[
+                                if (distance.isNotEmpty)
+                                  Text(' • ', style: _tileSubComfortaa),
+                                const Icon(Icons.star,
+                                    size: 14, color: Colors.amber),
+                                Text(' $rating', style: _tileSubComfortaa),
+                              ],
+                              if (openNow.isNotEmpty) ...[
+                                if (distance.isNotEmpty || rating.isNotEmpty)
+                                  Text(' • ', style: _tileSubComfortaa),
+                                Text(openNow, style: _tileSubComfortaa),
+                              ],
+                            ],
+                          ),
+                        ],
+                      ),
+                    );
+                  }),
+              ],
+
+              if (events.isNotEmpty) ...[
+                const SizedBox(height: 24),
+                _sectionTitle('Nearby Events'),
+                const SizedBox(height: 12),
+                ...events.map((event) {
+                  final name = event['name'] ?? '';
+                  final venue = event['venue'] ?? '';
+                  final dateTime = _formatEventDateTime(event['date']);
+                  final distance = _formatDistance(event['distance']);
+
+                  return ListTile(
+                    leading: const Icon(Icons.event, color: _teal),
+                    title: Text(name, style: _tileTitleComfortaa),
+                    subtitle: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        if (venue.isNotEmpty)
+                          Text(venue, style: _tileSubComfortaa),
+                        if (dateTime.isNotEmpty)
+                          Text(dateTime, style: _tileSubComfortaa),
+                        if (distance.isNotEmpty)
+                          Text(distance, style: _tileSubComfortaa),
+                      ],
+                    ),
+                  );
+                }),
+              ],
+
+              if (suggestedQuestions.isNotEmpty) ...[
+                const SizedBox(height: 24),
+                _sectionTitle('Ask Me About'),
+                ...suggestedQuestions.map(
+                  (q) => ListTile(
+                    leading: const Icon(Icons.chat_bubble_outline,
+                        color: _titleColor),
+                    title: Text(q, style: _tileTitleComfortaa),
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => ChatbotScreen(
+                            landmarkName: landmarkName,
+                            landmarkDescription: description,
+                            initialQuestion: q,
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                ),
+              ],
+
+              const SizedBox(height: 80),
+            ],
+          ),
+        ),
+      ),
     );
   }
 
