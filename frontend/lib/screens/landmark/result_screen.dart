@@ -168,6 +168,8 @@ class _LandmarkResultScreenState extends State<LandmarkResultScreen> {
     final nearbyLandmarks = _asMapList(nearby['landmarks']);
     final nearbyFood = _asMapList(nearby['food']);
 
+    final events = _asMapList(widget.landmarkData['events']);
+
     final suggestedQuestions =
         List<String>.from(widget.landmarkData['suggested_questions'] ?? []);
 
@@ -281,6 +283,109 @@ class _LandmarkResultScreenState extends State<LandmarkResultScreen> {
                           ],
                         ),
                       ),
+                      const SizedBox(height: 12),
+                      // Display nearby content
+                      if (_nearbyTab == 0 && nearbyLandmarks.isNotEmpty)
+                        ...nearbyLandmarks.map((place) {
+                          final name = place['name'] ?? '';
+                          final vicinity = place['vicinity'] ?? '';
+                          final distance = _formatDistance(place['distance']);
+                          final rating = _formatRating(place['rating'], place['user_ratings_total']);
+                          final openNow = _formatOpenNow(place['open_now']);
+                          
+                          return ListTile(
+                            leading: const Icon(Icons.location_on, color: Color(0xFF1F8A70)),
+                            title: Text(name, style: const TextStyle(fontWeight: FontWeight.w600)),
+                            subtitle: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                if (vicinity.isNotEmpty) Text(vicinity),
+                                Row(
+                                  children: [
+                                    if (distance.isNotEmpty) Text(distance),
+                                    if (rating.isNotEmpty) ...[
+                                      if (distance.isNotEmpty) const Text(' • '),
+                                      const Icon(Icons.star, size: 14, color: Colors.amber),
+                                      Text(' $rating'),
+                                    ],
+                                    if (openNow.isNotEmpty) ...[
+                                      if (distance.isNotEmpty || rating.isNotEmpty) const Text(' • '),
+                                      Text(openNow),
+                                    ],
+                                  ],
+                                ),
+                              ],
+                            ),
+                          );
+                        }),
+                      if (_nearbyTab == 1 && nearbyFood.isNotEmpty)
+                        ...nearbyFood.map((place) {
+                          final name = place['name'] ?? '';
+                          final vicinity = place['vicinity'] ?? '';
+                          final distance = _formatDistance(place['distance']);
+                          final rating = _formatRating(place['rating'], place['user_ratings_total']);
+                          final openNow = _formatOpenNow(place['open_now']);
+                          
+                          return ListTile(
+                            leading: const Icon(Icons.restaurant, color: Color(0xFF1F8A70)),
+                            title: Text(name, style: const TextStyle(fontWeight: FontWeight.w600)),
+                            subtitle: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                if (vicinity.isNotEmpty) Text(vicinity),
+                                Row(
+                                  children: [
+                                    if (distance.isNotEmpty) Text(distance),
+                                    if (rating.isNotEmpty) ...[
+                                      if (distance.isNotEmpty) const Text(' • '),
+                                      const Icon(Icons.star, size: 14, color: Colors.amber),
+                                      Text(' $rating'),
+                                    ],
+                                    if (openNow.isNotEmpty) ...[
+                                      if (distance.isNotEmpty || rating.isNotEmpty) const Text(' • '),
+                                      Text(openNow),
+                                    ],
+                                  ],
+                                ),
+                              ],
+                            ),
+                          );
+                        }),
+                    ],
+
+                    if (events.isNotEmpty) ...[
+                      const SizedBox(height: 24),
+                      const Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 16),
+                        child: Text(
+                          'Nearby Events',
+                          style: TextStyle(
+                            fontFamily: 'Arimo',
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+                      ...events.map((event) {
+                        final name = event['name'] ?? '';
+                        final venue = event['venue'] ?? '';
+                        final dateTime = _formatEventDateTime(event['date']);
+                        final distance = _formatDistance(event['distance']);
+                        
+                        return ListTile(
+                          leading: const Icon(Icons.event, color: Color(0xFF1F8A70)),
+                          title: Text(name, style: const TextStyle(fontWeight: FontWeight.w600)),
+                          subtitle: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              if (venue.isNotEmpty) Text(venue),
+                              if (dateTime.isNotEmpty) Text(dateTime),
+                              if (distance.isNotEmpty) Text(distance),
+                            ],
+                          ),
+                        );
+                      }),
                     ],
 
                     if (suggestedQuestions.isNotEmpty) ...[
