@@ -1,5 +1,5 @@
-from db.queries import get_scans_for_user, get_top_city_for_user
-from schemas.wrapped import WrappedResponse, WrappedScanItem
+from backend.db.queries import get_scans_for_user, get_top_city_for_user
+from backend.schemas.wrapped import WrappedResponse, WrappedScanItem
 
 
 def _norm_landmark(name: str | None) -> str:

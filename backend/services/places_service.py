@@ -4,8 +4,8 @@ from typing import Iterable
 
 import httpx
 
-from schemas.identify import PlaceSuggestion
-from services.cache import get as cache_get, set as cache_set
+from backend.schemas.identify import PlaceSuggestion
+from backend.services.cache import get as cache_get, set as cache_set
 
 PLACES_BASE_URL = "https://maps.googleapis.com/maps/api/place/nearbysearch/json"
 

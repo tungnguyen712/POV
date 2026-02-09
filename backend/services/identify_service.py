@@ -2,13 +2,13 @@ from typing import Optional
 import re
 from datetime import datetime, timezone
 
-from schemas.identify import IdentifyResponse, IdentifyRequest, AgeBracket, NearbySuggestions
-from services.cache import get as cache_get, set as cache_set
-from services.gemini import gemini_identify
-from services.places_service import get_nearby_landmarks, get_nearby_food
-from services.events_service import get_nearby_events
-from services.geocode_service import reverse_geocode
-from db import queries
+from backend.schemas.identify import IdentifyResponse, IdentifyRequest, AgeBracket, NearbySuggestions
+from backend.services.cache import get as cache_get, set as cache_set
+from backend.services.gemini import gemini_identify
+from backend.services.places_service import get_nearby_landmarks, get_nearby_food
+from backend.services.events_service import get_nearby_events
+from backend.services.geocode_service import reverse_geocode
+from backend.db import queries
 
 CONFIRM_THRESHOLD = 0.65
 

@@ -1,6 +1,6 @@
 from fastapi import APIRouter, HTTPException
-from schemas.profile import ProfileResponse, UserProfile, UserStats
-from db import queries
+from backend.schemas.profile import ProfileResponse, UserProfile, UserStats
+from backend.db import queries
 
 router = APIRouter(prefix="/profile", tags=["Profile"])
 

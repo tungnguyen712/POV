@@ -1,5 +1,5 @@
 from fastapi import APIRouter, HTTPException
-from db import queries
+from backend.db import queries
 
 router = APIRouter(prefix="/wrapped", tags=["Wrapped"])
 

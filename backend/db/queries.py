@@ -1,6 +1,6 @@
 from typing import Optional, Any
 from datetime import datetime
-from db.supabase import get_supabase
+from backend.db.supabase import get_supabase
 import uuid
 
 

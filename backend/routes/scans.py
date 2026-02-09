@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Query
-from db import queries
+from backend.db import queries
 
 router = APIRouter(prefix="/scans", tags=["Scans"])
 

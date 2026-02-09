@@ -1,6 +1,6 @@
 from google import genai
 from google.genai import types
-from schemas.identify import IdentifyRequest, IdentifyResponse
+from backend.schemas.identify import IdentifyRequest, IdentifyResponse
 import os
 
 

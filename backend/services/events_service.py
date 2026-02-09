@@ -2,8 +2,8 @@ import os
 
 import httpx
 
-from schemas.identify import EventSuggestion
-from services.cache import get as cache_get, set as cache_set
+from backend.schemas.identify import EventSuggestion
+from backend.services.cache import get as cache_get, set as cache_set
 
 TICKETMASTER_URL = "https://app.ticketmaster.com/discovery/v2/events.json"
 

@@ -1,9 +1,9 @@
 from fastapi import APIRouter, UploadFile, File, HTTPException, Form
-from schemas.identify import IdentifyResponse, AgeBracket
-from services.identify_service import identify_landmark
-from db import queries
+from backend.schemas.identify import IdentifyResponse, AgeBracket
+from backend.services.identify_service import identify_landmark
+from backend.db import queries
 from typing import Optional
-from services.geocode_service import reverse_geocode
+from backend.services.geocode_service import reverse_geocode
 
 router = APIRouter(prefix="/identify", tags=["Identify"])
 
