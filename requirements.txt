@@ -4,7 +4,7 @@ uvicorn[standard]
 python-dotenv
 google-genai
 httpx
-supabase
+supabase>=2.27.0
 Pillow
 python-multipart
 pydantic

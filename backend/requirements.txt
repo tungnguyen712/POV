@@ -4,5 +4,5 @@ pydantic
 python-dotenv
 requests
 google-genai
-supabase
+supabase>=2.27.0
 httpx
