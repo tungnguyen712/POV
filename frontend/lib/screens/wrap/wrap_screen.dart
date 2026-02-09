@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../services/wrapped_service.dart';
-import 'city_card.dart';
 import 'recent_scan_tile.dart';
 
 class WrapScreen extends StatefulWidget {
@@ -16,9 +15,15 @@ class _WrapScreenState extends State<WrapScreen> {
   final WrappedService _service = WrappedService();
   Future<Map<String, dynamic>>? _future;
 
-  // === Match LoginScreen typography/colors ===
+  // === Match Login/Profile vibe ===
   static const Color _titleColor = Color(0xFF363E44);
   static const Color _muted = Color(0xFF9CA3AF);
+
+  // Login button orange
+  static const Color _accentOrange = Color(0xFFF05B55);
+
+  // Login field mint background
+  static const Color _bgMint = Color(0xFFEDFFFC);
 
   static const TextStyle _h1Tilt = TextStyle(
     color: _titleColor,
@@ -62,10 +67,9 @@ class _WrapScreenState extends State<WrapScreen> {
     }
   }
 
-  String _formatTime(dynamic createdAt) {
-    if (createdAt == null) return '';
-    final raw = createdAt.toString();
-    final dt = DateTime.tryParse(raw);
+  String _formatTime(dynamic ts) {
+    if (ts == null) return '';
+    final dt = DateTime.tryParse(ts.toString());
     final local = (dt ?? DateTime.now()).toLocal();
 
     int h = local.hour;
@@ -75,13 +79,37 @@ class _WrapScreenState extends State<WrapScreen> {
     return '$h:$m $ampm';
   }
 
+  /// ✅ Extract recent scans from either payload shape:
+  /// - Old backend: { recent_scans: [...] }
+  /// - New backend: { items: [...] }
+  List<Map<String, dynamic>> _extractRecent(Map<String, dynamic> raw) {
+    if (raw['recent_scans'] is List) {
+      return (raw['recent_scans'] as List)
+          .whereType<Map>()
+          .map((e) => Map<String, dynamic>.from(e))
+          .toList();
+    }
+
+    final items = (raw['items'] is List) ? (raw['items'] as List) : const [];
+    return items
+        .whereType<Map>()
+        .map((e) {
+          return <String, dynamic>{
+            'landmark_name': e['landmark_name'],
+            'timestamp': e['timestamp'],
+            'image_url': e['image_url'],
+          };
+        })
+        .toList();
+  }
+
   @override
   Widget build(BuildContext context) {
     final user = Supabase.instance.client.auth.currentUser;
 
     if (user == null) {
       return const Scaffold(
-        backgroundColor: Colors.white,
+        backgroundColor: _bgMint,
         body: Center(
           child: Text(
             'Please log in first.',
@@ -100,14 +128,32 @@ class _WrapScreenState extends State<WrapScreen> {
     _future ??= _service.fetchWrapped(userId: user.id, limit: 50);
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: _bgMint,
+      appBar: AppBar(
+        backgroundColor: _accentOrange,
+        elevation: 0,
+        title: const Text(
+          'Wrap',
+          style: TextStyle(
+            fontFamily: 'Tilt Warp',
+            fontSize: 18,
+            fontWeight: FontWeight.w700,
+            color: Colors.white,
+            height: 1.2,
+          ),
+        ),
+        iconTheme: const IconThemeData(color: Colors.white),
+      ),
       body: SafeArea(
         child: FutureBuilder<Map<String, dynamic>>(
           future: _future,
           builder: (context, snap) {
             if (snap.connectionState != ConnectionState.done) {
-              return const Center(child: CircularProgressIndicator());
+              return const Center(
+                child: CircularProgressIndicator(color: _accentOrange),
+              );
             }
+
             if (snap.hasError) {
               return Padding(
                 padding: const EdgeInsets.all(20),
@@ -124,59 +170,28 @@ class _WrapScreenState extends State<WrapScreen> {
               );
             }
 
-            final data = snap.data ?? {};
-            final List cities = (data['cities'] as List?) ?? const [];
-            final List recent = (data['recent_scans'] as List?) ?? const [];
+            final raw = (snap.data ?? <String, dynamic>{});
+            final recent = _extractRecent(raw);
 
             return Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text('Your Journey', style: _h1Tilt),
-                  const SizedBox(height: 16),
-
-                  // City blocks
-                  SizedBox(
-                    height: 145,
-                    child: cities.isEmpty
-                        ? const Center(
-                            child: Text(
-                              'No cities yet. Scan a landmark to start!',
-                              style: _emptyStateComfortaa,
-                              textAlign: TextAlign.center,
-                            ),
-                          )
-                        : ListView.separated(
-                            scrollDirection: Axis.horizontal,
-                            itemCount: cities.length,
-                            separatorBuilder: (_, __) =>
-                                const SizedBox(width: 18),
-                            itemBuilder: (context, i) {
-                              final city = cities[i] as Map?;
-                              final name =
-                                  (city?['name'] ?? city?['city'] ?? 'CITY')
-                                      .toString();
-                              final color =
-                                  (city?['color'] ?? city?['color_hex'])
-                                      ?.toString();
-
-                              return CityCard(
-                                name: name,
-                                colorHex: color,
-                                onTap: () {
-                                  // TODO: open city history filter
-                                },
-                              );
-                            },
-                          ),
+                  Text(
+                    'Your Journey',
+                    style: _h1Tilt.copyWith(color: _titleColor),
                   ),
+                  const SizedBox(height: 24),
 
-                  const SizedBox(height: 28),
-                  const Text('RECENT SCANS', style: _sectionCapsComfortaa),
+                  Text(
+                    'RECENT SCANS',
+                    style: _sectionCapsComfortaa.copyWith(
+                      color: _accentOrange.withOpacity(0.85),
+                    ),
+                  ),
                   const SizedBox(height: 12),
 
-                  // Recent scans
                   Expanded(
                     child: recent.isEmpty
                         ? const Center(
@@ -188,29 +203,18 @@ class _WrapScreenState extends State<WrapScreen> {
                         : ListView.builder(
                             itemCount: recent.length,
                             itemBuilder: (context, i) {
-                              final scan = recent[i] as Map?;
-                              final title = (scan?['landmark_name'] ??
-                                      scan?['title'] ??
-                                      'Unknown')
-                                  .toString();
-                              final category =
-                                  (scan?['category'] ?? '').toString();
-                              final time = _formatTime(scan?['created_at']);
-                              final subtitle = category.isNotEmpty
-                                  ? '$time • $category'
-                                  : time;
-
-                              final thumb = (scan?['thumbnail_url'] ??
-                                      scan?['thumbnail'] ??
-                                      scan?['image_url'])
-                                  ?.toString();
+                              final scan = recent[i];
+                              final title =
+                                  (scan['landmark_name'] ?? 'Unknown').toString();
+                              final time = _formatTime(scan['timestamp']);
+                              final thumb = scan['image_url']?.toString();
 
                               return RecentScanTile(
                                 title: title,
-                                subtitle: subtitle,
+                                subtitle: time,
                                 thumbnailUrl: thumb,
                                 onTap: () {
-                                  // TODO: navigate to scan detail/result
+                                  // TODO: navigate to scan detail if needed
                                 },
                               );
                             },
