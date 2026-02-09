@@ -1,246 +1,164 @@
-# POV
-📍 POV
+# 📍 POV (Landmark Lens)
 
 Landmark Lens is a mobile application that uses Google Gemini 3 to identify landmarks from photos and provide personalized, interactive travel insights. Users can scan real-world locations and instantly learn about history, culture, and fun facts through AI-powered analysis.
 
-This project was developed for the Google Gemini 3 Hackathon.
 
-🚀 Features
+## 🚀 Features
 
-📷 Photo-Based Landmark Recognition
+### 📷 Photo-Based Landmark Recognition
+- Identify landmarks using images from camera or gallery
+- Real-time image processing with Gemini Multimodal AI
 
-Identify landmarks using images from camera or gallery.
+### 🧠 AI-Powered Analysis (Gemini 3)
+- Multimodal understanding (image + context)
+- Structured JSON responses
+- Confidence scoring and uncertainty handling
+- Smart caching system for faster responses
 
-🧠 AI-Powered Analysis (Gemini 3)
+### 🎯 Personalized Experience
+- Personalized fun facts and descriptions based on user age and interests
 
-Multimodal understanding (image + context)
+### 💬 Interactive AI Chatbot
+- Ask follow-up questions about landmarks
+- Natural conversation powered by Gemini
 
-Structured JSON responses
+### 🗺️ Location-Based Insights
+- Nearby restaurant recommendations near landmarks
+- Live events nearby (Ticketmaster API)
+- Interactive Google Maps integration for exploration history
 
-Confidence scoring and uncertainty handling
+### 📊 Journey Tracking & Analytics
+- "Wrapped" yearly summary feature
+- View past scans and exploration history
 
-🎯 Personalized Learning
+### 👤 User Profiles & Authentication
+- Secure authentication via Supabase
+- Save interests and preferences
 
-Adapts explanations based on user age and interests
+### 📱 Cross-Platform Mobile App
+- Built with Flutter (Android / iOS / Desktop supported)
 
-📊 Journey Tracking
+### 🗣️ Accessibility Features
+- Text-to-speech (TTS) for landmark descriptions
 
-View past scans and exploration history
+## 🛠️ Tech Stack
 
-Track number of landmarks visited
+**Frontend**
+- Flutter (cross-platform mobile)
+- Google Maps integration
+- Text-to-Speech accessibility
+- Supabase Auth
 
-📱 Cross-Platform Mobile App
+**Backend**
+- FastAPI (Python)
+- Google Gemini 3 multimodal API
+- Supabase (Database + Storage)
+- Google Places API
+- Ticketmaster Events API
+- Redis caching
 
-Built with Flutter (Android / iOS / Desktop supported)
+**Key API Integrations**
+- Google Gemini 3 for AI-powered landmark analysis
+- Google Places for nearby recommendations
+- Ticketmaster for live events
+- OpenStreetMap for geocoding
 
-🛠️ Tech Stack
-Frontend
+## 📂 Project Structure
 
-Flutter (Dart)
+```
+📂 Landmark-Lens/
+├── 📂 backend/
+│   ├── 📂 db/
+│   ├── 📂 routes/
+│   ├── 📂 schemas/
+│   ├── 📂 services/
+│   └── 📄 main.py
+├── 📂 frontend/
+│   ├── 📂 assets/
+│   ├── 📂 lib/
+│   │   ├── 📂 constants/
+│   │   ├── 📂 screens/
+│   │   ├── 📂 services/
+│   │   └── 📄 main.dart
+│   └── 📄 pubspec.yaml
+└── 📄 requirements.txt
+└── 📄 README.md
+```
 
-Material 3 UI
+## ⚙️ Setup and Installation
 
-Image Picker
+### 1. Clone the repository:
 
-HTTP Client
-
-Backend
-
-FastAPI (Python)
-
-Google Gemini 3 API
-
-Supabase (Database)
-
-Uvicorn (Server)
-
-AI / ML
-
-Google Gemini 3 Multimodal Models
-
-Structured JSON Output
-
-Personalized Prompting
-
-📂 Project Structure
-Landmark-Lens/
-│
-├── backend/
-│   ├── db/
-│   ├── routes/
-│   ├── schemas/
-│   ├── services/
-│   └── main.py
-│
-├── frontend/
-│   ├── lib/
-│   │   ├── screens/
-│   │   ├── services/
-│   │   └── main.dart
-│   └── pubspec.yaml
-│
-└── README.md
-
-⚙️ Setup Instructions
-1️⃣ Clone Repository
-git clone https://github.com/your-username/Landmark-Lens.git
+```bash
+git clone <repository-url>
 cd Landmark-Lens
+```
 
+### 2. Backend Setup
 
-🔧 TODO: Replace your-username with actual repo owner.
+**Install Dependencies**
 
-2️⃣ Backend Setup
-Install Dependencies
-cd backend
+```bash
 pip install -r requirements.txt
+```
 
+**Set Environment Variables**
 
-🔧 TODO: Create requirements.txt if missing.
+Create a `.env` file:
 
-Set Environment Variables
-
-Create a .env file:
-
-GEMINI_API_KEY=your_api_key_here
+```env
+GEMINI_API_KEY=your_api_key
 SUPABASE_URL=your_supabase_url
-SUPABASE_KEY=your_supabase_key
+SUPABASE_PUBLISHABLE_KEY=your_supabase_publishable_key
+SUPABASE_SECRET_KEY=your_supabase_secret_key
+GOOGLE_PLACES_API_KEY=your_google_places_api_key
+TICKETMASTER_API_KEY=your_ticketmaster_api_key
+```
 
+**Run Backend Server**
 
-🔧 TODO: Replace with real credentials.
-
-Run Backend Server
+```bash
+cd backend
 python main.py
+```
 
+Backend runs at: [http://localhost:8000](http://localhost:8000)
 
-Backend runs at:
+### 3. Frontend Setup
 
-http://localhost:8000
+**Install Flutter Packages**
 
-3️⃣ Frontend Setup
-Install Flutter Packages
+```bash
 cd frontend
 flutter pub get
+```
 
-Run App
-flutter run
+**Run App**
 
-🔗 API Endpoints
-Identify Landmark
-POST /identify/
+```bash
+.\run.ps1
+```
 
-
-Form Data:
-
-Field	Type	Description
-image	File	Image file
-user_id	String	User ID
-age_bracket	String	Optional
-interests	String	Optional
-lat	Float	Latitude
-lng	Float	Longitude
-
-Response:
-
-Returns structured landmark data in JSON format.
-
-🧩 Gemini Integration
+## 🧩 Gemini Integration
 
 We use Gemini 3 for:
+- Multimodal image understanding
+- Landmark identification
+- Context-aware reasoning
+- Personalized explanations
+- Schema-based JSON generation
 
-Multimodal image understanding
+## 📖 Usage Guide
 
-Landmark identification
+1. Open the app
+2. Tap the camera or gallery button
+3. Select an image
+4. View landmark details
+6. Explore history and fun facts
+7. Check wrapped journey history
 
-Context-aware reasoning
+## 🎥 Demo
 
-Personalized explanations
+> 🔧 TODO: Add demo video link (YouTube/Vimeo)
 
-Schema-based JSON generation
-
-Gemini processes:
-
-Image input
-
-User profile
-
-System instructions
-
-In a single request using long-context reasoning.
-
-📖 Usage Guide
-
-Open the app
-
-Tap the camera or gallery button
-
-Select an image
-
-Wait for AI analysis
-
-View landmark details
-
-Explore history and fun facts
-
-Check journey history
-
-🎥 Demo
-
-🔧 TODO: Add demo video link (YouTube/Vimeo)
-
-Example:
-
-https://youtu.be/your-demo-video
-
-🌍 Hackathon Submission
-
-This project was submitted to:
-
-Google Gemini 3 Hackathon (2025–2026)
-
-Submission includes:
-
-Working application
-
-Public repository
-
-Demo video
-
-Gemini integration write-up
-
-🧪 Testing
-
-🔧 TODO: Add automated tests (if available)
-
-Current testing:
-
-Manual UI testing
-
-API response validation
-
-Error handling checks
-
-👥 Team
-Name	Role
-[Your Name]	Frontend / Backend / AI
-[Teammate]	Backend / UI
-[Teammate]	Design / Research
-
-🔧 TODO: Update team members.
-
-📜 License
-
-🔧 TODO: Choose a license (MIT / Apache / GPL)
-
-Example:
-
-MIT License
-
-📬 Contact
-
-For questions:
-
-📧 Email: your-email@example.com
-
-🌐 GitHub: https://github.com/your-username
-
-🔧 TODO: Update contact info.
+Example: `https://youtu.be/your-demo-video`

@@ -1,8 +1,0 @@
-fastapi
-uvicorn
-pydantic
-python-dotenv
-requests
-google-genai
-supabase>=2.27.0
-httpx
