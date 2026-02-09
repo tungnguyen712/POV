@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../services/wrapped_service.dart';
+import 'city_card.dart';
 import 'recent_scan_tile.dart';
+import 'city_wrap_screen.dart';
 
 class WrapScreen extends StatefulWidget {
   const WrapScreen({super.key});
@@ -79,19 +81,32 @@ class _WrapScreenState extends State<WrapScreen> {
     return '$h:$m $ampm';
   }
 
-  /// ✅ Extract recent scans from either payload shape:
-  /// - Old backend: { recent_scans: [...] }
-  /// - New backend: { items: [...] }
-  List<Map<String, dynamic>> _extractRecent(Map<String, dynamic> raw) {
-    if (raw['recent_scans'] is List) {
-      return (raw['recent_scans'] as List)
-          .whereType<Map>()
-          .map((e) => Map<String, dynamic>.from(e))
-          .toList();
-    }
+  /// ✅ Compatibility adapter:
+  /// - Old backend: { cities: [...], recent_scans: [...] }
+  /// - New backend: { top_city: "...", items: [...], ... }
+  /// This function returns a map that ALWAYS contains cities + recent_scans
+  Map<String, dynamic> _normalizeWrapped(Map<String, dynamic> raw) {
+    final hasOldCities = raw['cities'] is List;
+    final hasOldRecent = raw['recent_scans'] is List;
+    if (hasOldCities && hasOldRecent) return raw;
+
+    final topCityRaw = raw['top_city'];
+    final topCity = (topCityRaw is String && topCityRaw.trim().isNotEmpty)
+        ? topCityRaw.trim()
+        : null;
 
     final items = (raw['items'] is List) ? (raw['items'] as List) : const [];
-    return items
+
+    final List<Map<String, dynamic>> cities = topCity == null
+        ? <Map<String, dynamic>>[]
+        : <Map<String, dynamic>>[
+            {
+              'name': topCity,
+              'color_hex': '#7ADBCF',
+            }
+          ];
+
+    final List<Map<String, dynamic>> recent = items
         .whereType<Map>()
         .map((e) {
           return <String, dynamic>{
@@ -101,6 +116,12 @@ class _WrapScreenState extends State<WrapScreen> {
           };
         })
         .toList();
+
+    return <String, dynamic>{
+      ...raw,
+      'cities': cities,
+      'recent_scans': recent,
+    };
   }
 
   @override
@@ -170,8 +191,11 @@ class _WrapScreenState extends State<WrapScreen> {
               );
             }
 
-            final raw = (snap.data ?? <String, dynamic>{});
-            final recent = _extractRecent(raw);
+            final raw = snap.data ?? <String, dynamic>{};
+            final data = _normalizeWrapped(raw);
+
+            final List cities = (data['cities'] as List?) ?? const [];
+            final List recent = (data['recent_scans'] as List?) ?? const [];
 
             return Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
@@ -182,8 +206,49 @@ class _WrapScreenState extends State<WrapScreen> {
                     'Your Journey',
                     style: _h1Tilt.copyWith(color: _titleColor),
                   ),
-                  const SizedBox(height: 24),
+                  const SizedBox(height: 16),
 
+                  // City blocks
+                  SizedBox(
+                    height: 145,
+                    child: cities.isEmpty
+                        ? const Center(
+                            child: Text(
+                              'No cities yet. Scan a landmark to start!',
+                              style: _emptyStateComfortaa,
+                              textAlign: TextAlign.center,
+                            ),
+                          )
+                        : ListView.separated(
+                            scrollDirection: Axis.horizontal,
+                            itemCount: cities.length,
+                            separatorBuilder: (_, __) =>
+                                const SizedBox(width: 18),
+                            itemBuilder: (context, i) {
+                              final city = cities[i] as Map?;
+                              final name =
+                                  (city?['name'] ?? 'Unknown').toString();
+                              final color =
+                                  (city?['color_hex'] ?? '#7ADBCF').toString();
+
+                              return CityCard(
+                                name: name,
+                                colorHex: color,
+                                onTap: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (_) =>
+                                          CityWrapScreen(cityName: name),
+                                    ),
+                                  );
+                                },
+                              );
+                            },
+                          ),
+                  ),
+
+                  const SizedBox(height: 28),
                   Text(
                     'RECENT SCANS',
                     style: _sectionCapsComfortaa.copyWith(
@@ -203,11 +268,12 @@ class _WrapScreenState extends State<WrapScreen> {
                         : ListView.builder(
                             itemCount: recent.length,
                             itemBuilder: (context, i) {
-                              final scan = recent[i];
+                              final scan = recent[i] as Map?;
                               final title =
-                                  (scan['landmark_name'] ?? 'Unknown').toString();
-                              final time = _formatTime(scan['timestamp']);
-                              final thumb = scan['image_url']?.toString();
+                                  (scan?['landmark_name'] ?? 'Unknown')
+                                      .toString();
+                              final time = _formatTime(scan?['timestamp']);
+                              final thumb = scan?['image_url']?.toString();
 
                               return RecentScanTile(
                                 title: title,
