@@ -2,11 +2,11 @@ import os
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from dotenv import load_dotenv
-from routes import identify, wrapped, scans
+from backend.routes import identify, wrapped, scans
 import uvicorn
-from routes.auth import router as auth_router
-from routes.chat import router as chat_router
-from routes.profile import router as profile_router
+from backend.routes.auth import router as auth_router
+from backend.routes.chat import router as chat_router
+from backend.routes.profile import router as profile_router
 
 load_dotenv()
 
